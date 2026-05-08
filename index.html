@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#E91E63">
+<title>Baby Talks — Pesquisa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #FFF5F7 0%, #FCE4EC 100%);
+    color: #2D2D2D;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 16px;
+    line-height: 1.5;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 580px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .logo {
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: #E91E63;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .progress-wrap {
+    margin: 16px 0 28px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: #FCE4EC;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #E91E63, #F06292);
+    width: 0;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+    border-radius: 999px;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: #999;
+    margin-top: 8px;
+    text-align: center;
+    letter-spacing: .5px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 32px 24px;
+    box-shadow: 0 4px 24px rgba(233, 30, 99, .08);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .step { display: none; animation: fadeIn .4s ease; }
+  .step.active { display: flex; flex-direction: column; flex: 1; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .question-num {
+    color: #E91E63;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .question {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    color: #1A1A1A;
+  }
+  .question-hint {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 20px;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 2px solid #F5E0E8;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all .2s;
+    background: #fff;
+    font-size: 15px;
+    user-select: none;
+  }
+  .opt:hover { border-color: #F8BBD0; }
+  .opt.selected {
+    border-color: #E91E63;
+    background: #FCE4EC;
+    color: #C2185B;
+    font-weight: 500;
+  }
+  .opt input { display: none; }
+  .opt .check {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #DDD;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    transition: all .2s;
+  }
+  .opt.selected .check {
+    border-color: #E91E63;
+    background: #E91E63;
+  }
+  .opt.selected .check::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 7px;
+    width: 4px; height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .opt.multi .check { border-radius: 6px; }
+  .opt.multi.selected .check { border-radius: 6px; }
+  .sub-options {
+    margin-top: 8px;
+    margin-left: 16px;
+    padding-left: 16px;
+    border-left: 2px solid #FCE4EC;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sub-options.show { display: flex; }
+  .sub-options .opt { padding: 12px 14px; font-size: 14px; }
+  input[type="text"], input[type="number"], textarea {
+    width: 100%;
+    padding: 16px 18px;
+    border: 2px solid #F5E0E8;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 16px;
+    background: #fff;
+    color: #2D2D2D;
+    outline: none;
+    transition: border-color .2s;
+    -webkit-appearance: none;
+  }
+  input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+    border-color: #E91E63;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.5;
+  }
+  .conditional { margin-top: 14px; display: none; }
+  .conditional.show { display: block; animation: fadeIn .3s ease; }
+  .conditional label {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .char-count {
+    text-align: right;
+    font-size: 12px;
+    color: #999;
+    margin-top: 6px;
+  }
+  .nav {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 24px;
+  }
+  .btn {
+    flex: 1;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    -webkit-appearance: none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #E91E63, #F06292);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(233, 30, 99, .3);
+  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(233, 30, 99, .4); }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+  .btn-secondary {
+    background: #fff;
+    color: #888;
+    border: 2px solid #F5E0E8;
+    flex: 0 0 auto;
+    padding: 16px 20px;
+  }
+  .btn-secondary:hover { border-color: #F8BBD0; color: #E91E63; }
+  .intro {
+    text-align: center;
+    padding: 12px 8px;
+  }
+  .intro h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+  .intro p {
+    color: #555;
+    margin-bottom: 16px;
+    font-size: 15px;
+  }
+  .gift {
+    background: linear-gradient(135deg, #FCE4EC, #F8BBD0);
+    border-radius: 16px;
+    padding: 18px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: #880E4F;
+    font-weight: 500;
+  }
+  .gift strong { display: block; font-size: 16px; margin-top: 4px; color: #C2185B; }
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 245, 247, .96);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+    z-index: 100;
+    padding: 24px;
+    text-align: center;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 56px;
+    height: 56px;
+    border: 4px solid #FCE4EC;
+    border-top-color: #E91E63;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    color: #C2185B;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  .loading-sub {
+    color: #888;
+    font-size: 13px;
+    max-width: 280px;
+  }
+  .feedback {
+    background: #FFF3E0;
+    border: 2px solid #FFB74D;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    color: #E65100;
+    font-size: 14px;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadeIn .3s ease; }
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: #BBB;
+    margin-top: 16px;
+    padding: 8px;
+  }
+  @media (max-width: 480px) {
+    .card { padding: 24px 18px; border-radius: 20px; }
+    .question { font-size: 19px; }
+    .intro h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="header">
+    <div class="logo">Baby Talks</div>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">Pergunta 1 de 12</div>
+  </div>
+
+  <div class="card">
+
+    <!-- INTRO -->
+    <div class="step active" data-step="0">
+      <div class="intro">
+        <h1>Estamos criando uma experiência inédita para gestantes ✨</h1>
+        <p>Um evento presencial pensado para acolher, preparar e conectar famílias para a chegada do bebê.</p>
+        <p>Sua opinião é muito importante para construirmos algo realmente especial.</p>
+        <div class="gift">
+          🎁 Como agradecimento por responder, você ganha:
+          <strong>Curso "O Dia do Parto" — 12 aulas</strong>
+        </div>
+        <p style="font-size:13px;color:#888;">São 12 perguntas rápidas. Leva uns 3 minutos.</p>
+      </div>
+      <div class="nav">
+        <button class="btn btn-primary" onclick="start()">Começar →</button>
+      </div>
+    </div>
+
+    <!-- 1 IDADE -->
+    <div class="step" data-step="1" data-required="idade">
+      <div class="question-num">Pergunta 1</div>
+      <div class="question">Qual a sua idade?</div>
+      <input type="number" id="idade" min="14" max="60" placeholder="Digite sua idade" inputmode="numeric">
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 2 TRABALHO -->
+    <div class="step" data-step="2" data-required="trabalho">
+      <div class="question-num">Pergunta 2</div>
+      <div class="question">Você está trabalhando no momento?</div>
+      <div class="options" data-field="trabalho" data-mode="single">
+        <label class="opt"><input type="radio" name="trabalho" value="Sim"><span class="check"></span>Sim</label>
+        <label class="opt"><input type="radio" name="trabalho" value="Não"><span class="check"></span>Não</label>
+      </div>
+      <div class="conditional" id="cond-profissao">
+        <label>Qual sua profissão?</label>
+        <input type="text" id="profissao" placeholder="Sua profissão">
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 3 PROFISSÃO CÔNJUGE -->
+    <div class="step" data-step="3" data-required="profissao_conjuge">
+      <div class="question-num">Pergunta 3</div>
+      <div class="question">Qual a profissão do seu cônjuge?</div>
+      <div class="question-hint">Se não tem cônjuge, pode escrever "Não tenho"</div>
+      <input type="text" id="profissao_conjuge" placeholder="Profissão do cônjuge">
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 4 FASE -->
+    <div class="step" data-step="4" data-required="fase">
+      <div class="question-num">Pergunta 4</div>
+      <div class="question">Em qual fase você está?</div>
+      <div class="options" data-field="fase" data-mode="single">
+        <label class="opt"><input type="radio" name="fase" value="Tentando engravidar"><span class="check"></span>Tentando engravidar</label>
+        <label class="opt" data-expand="trimestre"><input type="radio" name="fase" value="Grávida"><span class="check"></span>Grávida</label>
+        <div class="sub-options" id="sub-trimestre">
+          <label class="opt"><input type="radio" name="trimestre" value="1º trimestre"><span class="check"></span>1º trimestre</label>
+          <label class="opt"><input type="radio" name="trimestre" value="2º trimestre"><span class="check"></span>2º trimestre</label>
+          <label class="opt"><input type="radio" name="trimestre" value="3º trimestre"><span class="check"></span>3º trimestre</label>
+        </div>
+        <label class="opt"><input type="radio" name="fase" value="Bebê de até 30 dias"><span class="check"></span>Bebê de até 30 dias</label>
+        <label class="opt"><input type="radio" name="fase" value="Bebê maior de 30 dias"><span class="check"></span>Bebê maior de 30 dias</label>
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 5 FILHO -->
+    <div class="step" data-step="5" data-required="filho">
+      <div class="question-num">Pergunta 5</div>
+      <div class="question">Esse é seu:</div>
+      <div class="options" data-field="filho" data-mode="single">
+        <label class="opt"><input type="radio" name="filho" value="Primeiro filho"><span class="check"></span>Primeiro filho</label>
+        <label class="opt"><input type="radio" name="filho" value="Segundo filho"><span class="check"></span>Segundo filho</label>
+        <label class="opt"><input type="radio" name="filho" value="Terceiro"><span class="check"></span>Terceiro</label>
+        <label class="opt"><input type="radio" name="filho" value="Quarto ou mais"><span class="check"></span>Quarto ou mais</label>
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 6 ANSIEDADE (multi) -->
+    <div class="step" data-step="6" data-required="ansiedade">
+      <div class="question-num">Pergunta 6</div>
+      <div class="question">Qual tema mais gera ansiedade ou insegurança hoje?</div>
+      <div class="question-hint">Pode selecionar mais de um</div>
+      <div class="options" data-field="ansiedade" data-mode="multi">
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Parto"><span class="check"></span>Parto</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Amamentação"><span class="check"></span>Amamentação</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Sono do bebê"><span class="check"></span>Sono do bebê</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Cólica"><span class="check"></span>Cólica</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Cuidados com o recém-nascido"><span class="check"></span>Cuidados com o recém-nascido</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Vacinas"><span class="check"></span>Vacinas</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Enxoval"><span class="check"></span>Enxoval</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Relação do casal"><span class="check"></span>Relação do casal</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Exames da gestação"><span class="check"></span>Exames da gestação</label>
+        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Dia do parto"><span class="check"></span>Dia do parto</label>
+        <label class="opt multi" data-expand="ansiedade_outro"><input type="checkbox" name="ansiedade" value="Outro"><span class="check"></span>Outro</label>
+      </div>
+      <div class="conditional" id="cond-ansiedade_outro">
+        <label>Qual?</label>
+        <input type="text" id="ansiedade_outro" placeholder="Conta pra gente">
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 7 APRENDER (texto - QUALITY CHECK) -->
+    <div class="step" data-step="7" data-required="aprender" data-quality="true">
+      <div class="question-num">Pergunta 7</div>
+      <div class="question">O que você mais gostaria de aprender em um evento presencial?</div>
+      <div class="question-hint">Capricha aqui — é o que vai guiar nossas palestras 💕</div>
+      <textarea id="aprender" placeholder="Escreva com suas palavras..." minlength="30"></textarea>
+      <div class="char-count"><span id="count_aprender">0</span> caracteres (mínimo 30)</div>
+      <div class="feedback" id="feedback_aprender"></div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 8 INVESTIR (texto - QUALITY CHECK) -->
+    <div class="step" data-step="8" data-required="investir" data-quality="true">
+      <div class="question-num">Pergunta 8</div>
+      <div class="question">Quanto você acha justo investir nesse evento?</div>
+      <div class="question-hint">Pense em palestras com especialistas, formato de seminário/congresso. Pode usar como base outros eventos da sua área.</div>
+      <textarea id="investir" placeholder="Ex: R$ 200, ou explica como você pensa..." minlength="10"></textarea>
+      <div class="char-count"><span id="count_investir">0</span> caracteres (mínimo 10)</div>
+      <div class="feedback" id="feedback_investir"></div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 9 CÔNJUGE -->
+    <div class="step" data-step="9" data-required="conjuge_evento">
+      <div class="question-num">Pergunta 9</div>
+      <div class="question">Você considera importante que seu cônjuge participe do evento para aprender com você?</div>
+      <div class="options" data-field="conjuge_evento" data-mode="single">
+        <label class="opt"><input type="radio" name="conjuge_evento" value="Sim"><span class="check"></span>Sim</label>
+        <label class="opt"><input type="radio" name="conjuge_evento" value="Não"><span class="check"></span>Não</label>
+        <label class="opt"><input type="radio" name="conjuge_evento" value="Talvez"><span class="check"></span>Talvez</label>
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 10 HORÁRIO -->
+    <div class="step" data-step="10" data-required="horario">
+      <div class="question-num">Pergunta 10</div>
+      <div class="question">Qual horário seria melhor para você?</div>
+      <div class="options" data-field="horario" data-mode="single">
+        <label class="opt"><input type="radio" name="horario" value="Sábado de manhã"><span class="check"></span>Sábado de manhã</label>
+        <label class="opt"><input type="radio" name="horario" value="Sábado à tarde"><span class="check"></span>Sábado à tarde</label>
+        <label class="opt"><input type="radio" name="horario" value="Domingo de manhã"><span class="check"></span>Domingo de manhã</label>
+        <label class="opt"><input type="radio" name="horario" value="Domingo à tarde"><span class="check"></span>Domingo à tarde</label>
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 11 DURAÇÃO -->
+    <div class="step" data-step="11" data-required="duracao">
+      <div class="question-num">Pergunta 11</div>
+      <div class="question">Quanto tempo você considera ideal para este evento?</div>
+      <div class="question-hint">Será em um teatro, com palestras de profissionais sobre gestação, parto e primeiros dias com o bebê. Coffee incluído.</div>
+      <div class="options" data-field="duracao" data-mode="single">
+        <label class="opt"><input type="radio" name="duracao" value="3h"><span class="check"></span>3 horas</label>
+        <label class="opt"><input type="radio" name="duracao" value="6h"><span class="check"></span>6 horas</label>
+        <label class="opt"><input type="radio" name="duracao" value="Dia inteiro"><span class="check"></span>Dia inteiro</label>
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 12 FALTA (texto - QUALITY CHECK) -->
+    <div class="step" data-step="12" data-required="falta" data-quality="true">
+      <div class="question-num">Pergunta 12 — última!</div>
+      <div class="question">Na sua opinião, o que mais falta hoje nos eventos para gestantes?</div>
+      <div class="question-hint">Sua resposta aqui pode mudar a forma como esse evento vai ser construído 💕</div>
+      <textarea id="falta" placeholder="Conta pra gente..." minlength="30"></textarea>
+      <div class="char-count"><span id="count_falta">0</span> caracteres (mínimo 30)</div>
+      <div class="feedback" id="feedback_falta"></div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="submitForm()">Enviar respostas ✨</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">Manual do Recém-nascido · Baby Talks 2026</div>
+</div>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div>
+    <div class="loading-text" id="loadingText">Enviando suas respostas...</div>
+    <div class="loading-sub" id="loadingSub">Estamos preparando seu acesso ao curso 🎁</div>
+  </div>
+</div>
+
+<script>
+  const WEBHOOK_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/baby-talks-pesquisa';
+  const TOTAL_STEPS = 12;
+  let currentStep = 0;
+  const answers = {};
+
+  function $(s) { return document.querySelector(s); }
+  function $$(s) { return document.querySelectorAll(s); }
+
+  function start() { goTo(1); }
+
+  function goTo(n) {
+    $$('.step').forEach(s => s.classList.remove('active'));
+    const target = $(`[data-step="${n}"]`);
+    if (!target) return;
+    target.classList.add('active');
+    currentStep = n;
+    if (n >= 1 && n <= TOTAL_STEPS) {
+      $('#progressWrap').style.display = 'block';
+      $('#progressFill').style.width = ((n / TOTAL_STEPS) * 100) + '%';
+      $('#progressText').textContent = `Pergunta ${n} de ${TOTAL_STEPS}`;
+    } else {
+      $('#progressWrap').style.display = 'none';
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    saveDraft();
+  }
+
+  function prev() { if (currentStep > 0) goTo(currentStep - 1); }
+
+  function next() {
+    if (!validateCurrent()) return;
+    captureCurrent();
+    if (currentStep < TOTAL_STEPS) goTo(currentStep + 1);
+  }
+
+  function validateCurrent() {
+    const step = $(`[data-step="${currentStep}"]`);
+    const field = step.dataset.required;
+    if (!field) return true;
+    if (currentStep === 1) {
+      const v = $('#idade').value.trim();
+      if (!v || +v < 14 || +v > 60) { alert('Por favor, digite uma idade válida.'); return false; }
+      return true;
+    }
+    if (currentStep === 2) {
+      const trab = step.querySelector('input[name="trabalho"]:checked');
+      if (!trab) { alert('Selecione uma opção.'); return false; }
+      if (trab.value === 'Sim' && !$('#profissao').value.trim()) { alert('Por favor, informe sua profissão.'); return false; }
+      return true;
+    }
+    if (currentStep === 3) {
+      if (!$('#profissao_conjuge').value.trim()) { alert('Por favor, preencha o campo.'); return false; }
+      return true;
+    }
+    if (currentStep === 4) {
+      const fase = step.querySelector('input[name="fase"]:checked');
+      if (!fase) { alert('Selecione uma opção.'); return false; }
+      if (fase.value === 'Grávida' && !step.querySelector('input[name="trimestre"]:checked')) {
+        alert('Selecione qual trimestre.'); return false;
+      }
+      return true;
+    }
+    if ([5, 9, 10, 11].includes(currentStep)) {
+      const r = step.querySelector(`input[name="${field}"]:checked`);
+      if (!r) { alert('Selecione uma opção.'); return false; }
+      return true;
+    }
+    if (currentStep === 6) {
+      const checks = step.querySelectorAll('input[name="ansiedade"]:checked');
+      if (!checks.length) { alert('Selecione ao menos uma opção.'); return false; }
+      const hasOutro = [...checks].some(c => c.value === 'Outro');
+      if (hasOutro && !$('#ansiedade_outro').value.trim()) { alert('Detalhe o "Outro" por favor.'); return false; }
+      return true;
+    }
+    if (currentStep === 7) {
+      const v = $('#aprender').value.trim();
+      if (v.length < 30) { alert('Por favor, escreva pelo menos 30 caracteres.'); return false; }
+      return true;
+    }
+    if (currentStep === 8) {
+      const v = $('#investir').value.trim();
+      if (v.length < 10) { alert('Por favor, escreva pelo menos 10 caracteres.'); return false; }
+      return true;
+    }
+    if (currentStep === 12) {
+      const v = $('#falta').value.trim();
+      if (v.length < 30) { alert('Por favor, escreva pelo menos 30 caracteres.'); return false; }
+      return true;
+    }
+    return true;
+  }
+
+  function captureCurrent() {
+    const step = $(`[data-step="${currentStep}"]`);
+    if (currentStep === 1) answers.idade = +$('#idade').value;
+    if (currentStep === 2) {
+      const trab = step.querySelector('input[name="trabalho"]:checked');
+      answers.trabalho = trab ? trab.value : '';
+      answers.profissao = $('#profissao').value.trim();
+    }
+    if (currentStep === 3) answers.profissao_conjuge = $('#profissao_conjuge').value.trim();
+    if (currentStep === 4) {
+      const fase = step.querySelector('input[name="fase"]:checked');
+      answers.fase = fase ? fase.value : '';
+      const tri = step.querySelector('input[name="trimestre"]:checked');
+      answers.trimestre = tri ? tri.value : '';
+    }
+    if (currentStep === 5) answers.filho = step.querySelector('input[name="filho"]:checked')?.value || '';
+    if (currentStep === 6) {
+      const checks = step.querySelectorAll('input[name="ansiedade"]:checked');
+      answers.ansiedade = [...checks].map(c => c.value);
+      answers.ansiedade_outro = $('#ansiedade_outro').value.trim();
+    }
+    if (currentStep === 7) answers.aprender = $('#aprender').value.trim();
+    if (currentStep === 8) answers.investir = $('#investir').value.trim();
+    if (currentStep === 9) answers.conjuge_evento = step.querySelector('input[name="conjuge_evento"]:checked')?.value || '';
+    if (currentStep === 10) answers.horario = step.querySelector('input[name="horario"]:checked')?.value || '';
+    if (currentStep === 11) answers.duracao = step.querySelector('input[name="duracao"]:checked')?.value || '';
+    if (currentStep === 12) answers.falta = $('#falta').value.trim();
+  }
+
+  // Click handlers para opt
+  document.addEventListener('click', e => {
+    const opt = e.target.closest('.opt');
+    if (!opt) return;
+    const input = opt.querySelector('input');
+    if (!input) return;
+    if (input.type === 'radio') {
+      const name = input.name;
+      $$(`input[name="${name}"]`).forEach(i => i.closest('.opt').classList.remove('selected'));
+      input.checked = true;
+      opt.classList.add('selected');
+      // expand sub-options
+      const expand = opt.dataset.expand;
+      if (expand) {
+        $$('.sub-options').forEach(s => {
+          if (s.id === 'sub-' + expand) s.classList.add('show');
+        });
+      } else {
+        // se mudou pra outro radio do mesmo grupo, esconde subs
+        if (name === 'fase') {
+          if (input.value !== 'Grávida') $('#sub-trimestre').classList.remove('show');
+        }
+      }
+      // conditional fields
+      if (name === 'trabalho') {
+        const cond = $('#cond-profissao');
+        if (input.value === 'Sim') cond.classList.add('show');
+        else cond.classList.remove('show');
+      }
+    } else if (input.type === 'checkbox') {
+      input.checked = !input.checked;
+      opt.classList.toggle('selected', input.checked);
+      const expand = opt.dataset.expand;
+      if (expand) {
+        const cond = $('#cond-' + expand);
+        if (cond) cond.classList.toggle('show', input.checked);
+      }
+    }
+  });
+
+  // Char counters
+  ['aprender', 'investir', 'falta'].forEach(id => {
+    const el = $('#' + id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      $('#count_' + id).textContent = el.value.length;
+    });
+  });
+
+  // Draft
+  function saveDraft() {
+    captureCurrent();
+    try { localStorage.setItem('baby_talks_draft', JSON.stringify({ answers, step: currentStep, ts: Date.now() })); } catch(e) {}
+  }
+  function loadDraft() {
+    try {
+      const raw = localStorage.getItem('baby_talks_draft');
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      // só restaura se < 24h
+      if (Date.now() - d.ts > 24 * 3600 * 1000) return;
+      Object.assign(answers, d.answers || {});
+      // (não restaura step pra não pular intro, usuário recomeça mas as respostas ficam)
+    } catch(e) {}
+  }
+  loadDraft();
+
+  async function submitForm() {
+    if (!validateCurrent()) return;
+    captureCurrent();
+    $('#loading').classList.add('show');
+    $('#loadingText').textContent = 'Analisando suas respostas...';
+    $('#loadingSub').textContent = 'Só um instante 💕';
+
+    const payload = {
+      ...answers,
+      enviado_em: new Date().toISOString(),
+      user_agent: navigator.userAgent,
+      referrer: document.referrer || ''
+    };
+
+    try {
+      const r = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await r.json().catch(() => ({}));
+      if (data.aprovado && data.url_acesso) {
+        $('#loadingText').textContent = 'Tudo certo! Redirecionando...';
+        $('#loadingSub').textContent = 'Liberando seu acesso ao curso 🎁';
+        try { localStorage.removeItem('baby_talks_draft'); } catch(e) {}
+        setTimeout(() => { window.location.href = data.url_acesso; }, 1200);
+      } else if (data.feedback_campo) {
+        $('#loading').classList.remove('show');
+        const campo = data.feedback_campo;
+        const stepMap = { aprender: 7, investir: 8, falta: 12 };
+        const s = stepMap[campo];
+        if (s) {
+          goTo(s);
+          const fb = $('#feedback_' + campo);
+          if (fb) {
+            fb.textContent = data.mensagem || 'Por favor, escreva com mais detalhes — sua opinião é importante!';
+            fb.classList.add('show');
+          }
+        } else {
+          alert(data.mensagem || 'Por favor, revise suas respostas.');
+        }
+      } else {
+        $('#loading').classList.remove('show');
+        alert('Algo deu errado. Tente novamente em instantes.');
+      }
+    } catch(err) {
+      $('#loading').classList.remove('show');
+      alert('Sem conexão. Verifique sua internet e tente de novo.');
+      console.error(err);
+    }
+  }
+</script>
+</body>
+</html>
