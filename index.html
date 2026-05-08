@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#E91E63">
-<title>Baby Talks — Pesquisa</title>
+<title>Pesquisa — Manual do Recém-nascido</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
     margin-bottom: 24px;
   }
   .logo {
-    font-size: 14px;
+    font-size: 12px;
     letter-spacing: 4px;
     color: #E91E63;
     font-weight: 600;
@@ -155,6 +155,25 @@
   }
   .sub-options.show { display: flex; }
   .sub-options .opt { padding: 12px 14px; font-size: 14px; }
+  .sub-block {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed #F5E0E8;
+    display: none;
+    animation: fadeIn .3s ease;
+  }
+  .sub-block.show { display: block; }
+  .sub-block-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin-bottom: 4px;
+  }
+  .sub-block-hint {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+  }
   input[type="text"], input[type="number"], textarea {
     width: 100%;
     padding: 16px 18px;
@@ -313,12 +332,12 @@
 
 <div class="wrap">
   <div class="header">
-    <div class="logo">Baby Talks</div>
+    <div class="logo">Manual do Recém-nascido</div>
   </div>
 
   <div class="progress-wrap" id="progressWrap" style="display:none">
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-text" id="progressText">Pergunta 1 de 12</div>
+    <div class="progress-text" id="progressText">Pergunta 1 de 14</div>
   </div>
 
   <div class="card">
@@ -328,12 +347,12 @@
       <div class="intro">
         <h1>Estamos criando uma experiência inédita para gestantes ✨</h1>
         <p>Um evento presencial pensado para acolher, preparar e conectar famílias para a chegada do bebê.</p>
-        <p>Sua opinião é muito importante para construirmos algo realmente especial.</p>
+        <p>Queremos construir algo realmente especial. Pedimos que você responda com atenção e sinceridade — assim conseguimos entender o que as famílias esperam e precisam nesse momento.</p>
         <div class="gift">
-          🎁 Como agradecimento por responder, você ganha:
-          <strong>Curso "O Dia do Parto" — 12 aulas</strong>
+          🎁 Como agradecimento, todas que responderem de maneira válida ganham:
+          <strong>Curso "O Dia do Parto" — 11 aulas</strong>
         </div>
-        <p style="font-size:13px;color:#888;">São 12 perguntas rápidas. Leva uns 3 minutos.</p>
+        <p style="font-size:13px;color:#888;">São 14 perguntas. Leva uns 5 minutos.</p>
       </div>
       <div class="nav">
         <button class="btn btn-primary" onclick="start()">Começar →</button>
@@ -341,7 +360,7 @@
     </div>
 
     <!-- 1 IDADE -->
-    <div class="step" data-step="1" data-required="idade">
+    <div class="step" data-step="1">
       <div class="question-num">Pergunta 1</div>
       <div class="question">Qual a sua idade?</div>
       <input type="number" id="idade" min="14" max="60" placeholder="Digite sua idade" inputmode="numeric">
@@ -352,7 +371,7 @@
     </div>
 
     <!-- 2 TRABALHO -->
-    <div class="step" data-step="2" data-required="trabalho">
+    <div class="step" data-step="2">
       <div class="question-num">Pergunta 2</div>
       <div class="question">Você está trabalhando no momento?</div>
       <div class="options" data-field="trabalho" data-mode="single">
@@ -370,10 +389,10 @@
     </div>
 
     <!-- 3 PROFISSÃO CÔNJUGE -->
-    <div class="step" data-step="3" data-required="profissao_conjuge">
+    <div class="step" data-step="3">
       <div class="question-num">Pergunta 3</div>
       <div class="question">Qual a profissão do seu cônjuge?</div>
-      <div class="question-hint">Se não tem cônjuge, pode escrever "Não tenho"</div>
+      <div class="question-hint">Se não tem cônjuge, escreva "Não tenho"</div>
       <input type="text" id="profissao_conjuge" placeholder="Profissão do cônjuge">
       <div class="nav">
         <button class="btn btn-secondary" onclick="prev()">←</button>
@@ -382,7 +401,7 @@
     </div>
 
     <!-- 4 FASE -->
-    <div class="step" data-step="4" data-required="fase">
+    <div class="step" data-step="4">
       <div class="question-num">Pergunta 4</div>
       <div class="question">Em qual fase você está?</div>
       <div class="options" data-field="fase" data-mode="single">
@@ -393,8 +412,8 @@
           <label class="opt"><input type="radio" name="trimestre" value="2º trimestre"><span class="check"></span>2º trimestre</label>
           <label class="opt"><input type="radio" name="trimestre" value="3º trimestre"><span class="check"></span>3º trimestre</label>
         </div>
-        <label class="opt"><input type="radio" name="fase" value="Bebê de até 30 dias"><span class="check"></span>Bebê de até 30 dias</label>
-        <label class="opt"><input type="radio" name="fase" value="Bebê maior de 30 dias"><span class="check"></span>Bebê maior de 30 dias</label>
+        <label class="opt"><input type="radio" name="fase" value="Bebê de até 90 dias"><span class="check"></span>Bebê de até 90 dias</label>
+        <label class="opt"><input type="radio" name="fase" value="Bebê maior de 90 dias"><span class="check"></span>Bebê maior de 90 dias</label>
       </div>
       <div class="nav">
         <button class="btn btn-secondary" onclick="prev()">←</button>
@@ -403,13 +422,13 @@
     </div>
 
     <!-- 5 FILHO -->
-    <div class="step" data-step="5" data-required="filho">
+    <div class="step" data-step="5">
       <div class="question-num">Pergunta 5</div>
       <div class="question">Esse é seu:</div>
       <div class="options" data-field="filho" data-mode="single">
         <label class="opt"><input type="radio" name="filho" value="Primeiro filho"><span class="check"></span>Primeiro filho</label>
         <label class="opt"><input type="radio" name="filho" value="Segundo filho"><span class="check"></span>Segundo filho</label>
-        <label class="opt"><input type="radio" name="filho" value="Terceiro"><span class="check"></span>Terceiro</label>
+        <label class="opt"><input type="radio" name="filho" value="Terceiro filho"><span class="check"></span>Terceiro filho</label>
         <label class="opt"><input type="radio" name="filho" value="Quarto ou mais"><span class="check"></span>Quarto ou mais</label>
       </div>
       <div class="nav">
@@ -418,27 +437,35 @@
       </div>
     </div>
 
-    <!-- 6 ANSIEDADE (multi) -->
-    <div class="step" data-step="6" data-required="ansiedade">
+    <!-- 6 GESTAÇÃO -->
+    <div class="step" data-step="6">
       <div class="question-num">Pergunta 6</div>
-      <div class="question">Qual tema mais gera ansiedade ou insegurança hoje?</div>
-      <div class="question-hint">Pode selecionar mais de um</div>
-      <div class="options" data-field="ansiedade" data-mode="multi">
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Parto"><span class="check"></span>Parto</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Amamentação"><span class="check"></span>Amamentação</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Sono do bebê"><span class="check"></span>Sono do bebê</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Cólica"><span class="check"></span>Cólica</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Cuidados com o recém-nascido"><span class="check"></span>Cuidados com o recém-nascido</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Vacinas"><span class="check"></span>Vacinas</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Enxoval"><span class="check"></span>Enxoval</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Relação do casal"><span class="check"></span>Relação do casal</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Exames da gestação"><span class="check"></span>Exames da gestação</label>
-        <label class="opt multi"><input type="checkbox" name="ansiedade" value="Dia do parto"><span class="check"></span>Dia do parto</label>
-        <label class="opt multi" data-expand="ansiedade_outro"><input type="checkbox" name="ansiedade" value="Outro"><span class="check"></span>Outro</label>
+      <div class="question">Você considera importante aprender mais sobre <strong style="color:#E91E63">GESTAÇÃO</strong> em um evento presencial?</div>
+      <div class="options" data-field="gestacao_interesse" data-mode="single">
+        <label class="opt" data-expand-block="gestacao"><input type="radio" name="gestacao_interesse" value="Sim"><span class="check"></span>Sim</label>
+        <label class="opt"><input type="radio" name="gestacao_interesse" value="Não"><span class="check"></span>Não</label>
+        <label class="opt" data-expand-block="gestacao"><input type="radio" name="gestacao_interesse" value="Talvez"><span class="check"></span>Talvez</label>
       </div>
-      <div class="conditional" id="cond-ansiedade_outro">
-        <label>Qual?</label>
-        <input type="text" id="ansiedade_outro" placeholder="Conta pra gente">
+      <div class="sub-block" id="block-gestacao">
+        <div class="sub-block-title">Quais temas sobre gestação mais despertam seu interesse?</div>
+        <div class="sub-block-hint">Pode selecionar mais de um</div>
+        <div class="options" data-mode="multi">
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Exames da gestação"><span class="check"></span>Exames da gestação</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Mudanças no corpo e emoções"><span class="check"></span>Mudanças no corpo e emoções</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Alimentação na gestação"><span class="check"></span>Alimentação na gestação</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Exercícios físicos"><span class="check"></span>Exercícios físicos</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Relação do casal durante a gravidez"><span class="check"></span>Relação do casal durante a gravidez</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Saúde emocional da gestante"><span class="check"></span>Saúde emocional da gestante</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Preparação para o parto"><span class="check"></span>Preparação para o parto</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Montagem da mala da maternidade"><span class="check"></span>Montagem da mala da maternidade</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Plano de parto"><span class="check"></span>Plano de parto</label>
+          <label class="opt multi"><input type="checkbox" name="gestacao_temas" value="Escolha da maternidade"><span class="check"></span>Escolha da maternidade</label>
+          <label class="opt multi" data-expand="gestacao_outro"><input type="checkbox" name="gestacao_temas" value="Outro"><span class="check"></span>Outro</label>
+        </div>
+        <div class="conditional" id="cond-gestacao_outro">
+          <label>Qual?</label>
+          <input type="text" id="gestacao_outro" placeholder="Conta pra gente">
+        </div>
       </div>
       <div class="nav">
         <button class="btn btn-secondary" onclick="prev()">←</button>
@@ -446,37 +473,156 @@
       </div>
     </div>
 
-    <!-- 7 APRENDER (texto - QUALITY CHECK) -->
-    <div class="step" data-step="7" data-required="aprender" data-quality="true">
+    <!-- 7 PARTO -->
+    <div class="step" data-step="7">
       <div class="question-num">Pergunta 7</div>
+      <div class="question">Você considera importante aprender mais sobre <strong style="color:#E91E63">PARTO</strong> em um evento presencial?</div>
+      <div class="options" data-field="parto_interesse" data-mode="single">
+        <label class="opt" data-expand-block="parto"><input type="radio" name="parto_interesse" value="Sim"><span class="check"></span>Sim</label>
+        <label class="opt"><input type="radio" name="parto_interesse" value="Não"><span class="check"></span>Não</label>
+        <label class="opt" data-expand-block="parto"><input type="radio" name="parto_interesse" value="Talvez"><span class="check"></span>Talvez</label>
+      </div>
+      <div class="sub-block" id="block-parto">
+        <div class="sub-block-title">Quais temas sobre parto mais despertam seu interesse?</div>
+        <div class="sub-block-hint">Pode selecionar mais de um</div>
+        <div class="options" data-mode="multi">
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Como reconhecer o trabalho de parto"><span class="check"></span>Como reconhecer o trabalho de parto</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Tipos de parto"><span class="check"></span>Tipos de parto</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Medos e inseguranças"><span class="check"></span>Medos e inseguranças</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Papel do parceiro no parto"><span class="check"></span>Papel do parceiro no parto</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Dor e analgesia"><span class="check"></span>Dor e analgesia</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Cesárea"><span class="check"></span>Cesárea</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Parto normal"><span class="check"></span>Parto normal</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Violência obstétrica"><span class="check"></span>Violência obstétrica</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Hora dourada"><span class="check"></span>Hora dourada</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Primeiras horas do bebê"><span class="check"></span>Primeiras horas do bebê</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="O que levar para maternidade"><span class="check"></span>O que levar para maternidade</label>
+          <label class="opt multi"><input type="checkbox" name="parto_temas" value="Recuperação pós-parto"><span class="check"></span>Recuperação pós-parto</label>
+          <label class="opt multi" data-expand="parto_outro"><input type="checkbox" name="parto_temas" value="Outro"><span class="check"></span>Outro</label>
+        </div>
+        <div class="conditional" id="cond-parto_outro">
+          <label>Qual?</label>
+          <input type="text" id="parto_outro" placeholder="Conta pra gente">
+        </div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 8 PRIMEIROS MESES BEBÊ -->
+    <div class="step" data-step="8">
+      <div class="question-num">Pergunta 8</div>
+      <div class="question">Você considera importante aprender mais sobre os <strong style="color:#E91E63">PRIMEIROS MESES DO BEBÊ</strong> em um evento presencial?</div>
+      <div class="options" data-field="bebe_interesse" data-mode="single">
+        <label class="opt" data-expand-block="bebe"><input type="radio" name="bebe_interesse" value="Sim"><span class="check"></span>Sim</label>
+        <label class="opt"><input type="radio" name="bebe_interesse" value="Não"><span class="check"></span>Não</label>
+        <label class="opt" data-expand-block="bebe"><input type="radio" name="bebe_interesse" value="Talvez"><span class="check"></span>Talvez</label>
+      </div>
+      <div class="sub-block" id="block-bebe">
+        <div class="sub-block-title">Quais temas mais despertam seu interesse?</div>
+        <div class="sub-block-hint">Pode selecionar mais de um</div>
+        <div class="options" data-mode="multi">
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Amamentação"><span class="check"></span>Amamentação</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Sono do bebê"><span class="check"></span>Sono do bebê</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Cólica"><span class="check"></span>Cólica</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Rotina"><span class="check"></span>Rotina</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Banho e cuidados básicos"><span class="check"></span>Banho e cuidados básicos</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Vacinas"><span class="check"></span>Vacinas</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Desenvolvimento do bebê"><span class="check"></span>Desenvolvimento do bebê</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Choro do bebê"><span class="check"></span>Choro do bebê</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Introdução à rotina de sono"><span class="check"></span>Introdução à rotina de sono</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Rede de apoio"><span class="check"></span>Rede de apoio</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Relação do casal após o bebê"><span class="check"></span>Relação do casal após o bebê</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Enxoval"><span class="check"></span>Enxoval</label>
+          <label class="opt multi"><input type="checkbox" name="bebe_temas" value="Segurança do bebê"><span class="check"></span>Segurança do bebê</label>
+          <label class="opt multi" data-expand="bebe_outro"><input type="checkbox" name="bebe_temas" value="Outro"><span class="check"></span>Outro</label>
+        </div>
+        <div class="conditional" id="cond-bebe_outro">
+          <label>Qual?</label>
+          <input type="text" id="bebe_outro" placeholder="Conta pra gente">
+        </div>
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 9 EXTRAS DO EVENTO -->
+    <div class="step" data-step="9">
+      <div class="question-num">Pergunta 9</div>
+      <div class="question">O que você acha importante ter nos eventos?</div>
+      <div class="question-hint">Pode selecionar mais de um</div>
+      <div class="options" data-mode="multi">
+        <label class="opt multi"><input type="checkbox" name="evento_extras" value="Brindes"><span class="check"></span>Brindes</label>
+        <label class="opt multi"><input type="checkbox" name="evento_extras" value="Sorteios"><span class="check"></span>Sorteios</label>
+        <label class="opt multi"><input type="checkbox" name="evento_extras" value="Estacionamento"><span class="check"></span>Estacionamento</label>
+        <label class="opt multi"><input type="checkbox" name="evento_extras" value="Coffee break"><span class="check"></span>Coffee break</label>
+        <label class="opt multi"><input type="checkbox" name="evento_extras" value="Material de apoio/apostila"><span class="check"></span>Material de apoio/apostila</label>
+        <label class="opt multi"><input type="checkbox" name="evento_extras" value="Conteúdo prático"><span class="check"></span>Conteúdo prático</label>
+        <label class="opt multi" data-expand="evento_extras_outro"><input type="checkbox" name="evento_extras" value="Outro"><span class="check"></span>Outro</label>
+      </div>
+      <div class="conditional" id="cond-evento_extras_outro">
+        <label>Qual?</label>
+        <input type="text" id="evento_extras_outro" placeholder="Conta pra gente">
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 10 APRENDER (texto - QUALITY CHECK) -->
+    <div class="step" data-step="10">
+      <div class="question-num">Pergunta 10</div>
       <div class="question">O que você mais gostaria de aprender em um evento presencial?</div>
       <div class="question-hint">Capricha aqui — é o que vai guiar nossas palestras 💕</div>
-      <textarea id="aprender" placeholder="Escreva com suas palavras..." minlength="30"></textarea>
-      <div class="char-count"><span id="count_aprender">0</span> caracteres (mínimo 30)</div>
-      <div class="feedback" id="feedback_aprender"></div>
+      <textarea id="aprender_evento" placeholder="Escreva com suas palavras..." minlength="30"></textarea>
+      <div class="char-count"><span id="count_aprender_evento">0</span> caracteres (mínimo 30)</div>
+      <div class="feedback" id="feedback_aprender_evento"></div>
       <div class="nav">
         <button class="btn btn-secondary" onclick="prev()">←</button>
         <button class="btn btn-primary" onclick="next()">Próxima →</button>
       </div>
     </div>
 
-    <!-- 8 INVESTIR (texto - QUALITY CHECK) -->
-    <div class="step" data-step="8" data-required="investir" data-quality="true">
-      <div class="question-num">Pergunta 8</div>
-      <div class="question">Quanto você acha justo investir nesse evento?</div>
-      <div class="question-hint">Pense em palestras com especialistas, formato de seminário/congresso. Pode usar como base outros eventos da sua área.</div>
-      <textarea id="investir" placeholder="Ex: R$ 200, ou explica como você pensa..." minlength="10"></textarea>
-      <div class="char-count"><span id="count_investir">0</span> caracteres (mínimo 10)</div>
-      <div class="feedback" id="feedback_investir"></div>
+    <!-- 11 TEMPO -->
+    <div class="step" data-step="11">
+      <div class="question-num">Pergunta 11</div>
+      <div class="question">Quanto tempo você considera ideal para este evento?</div>
+      <div class="question-hint">Será em um teatro, com palestras de profissionais sobre gestação, parto e primeiros dias com o bebê.</div>
+      <div class="options" data-field="tempo_ideal" data-mode="single">
+        <label class="opt"><input type="radio" name="tempo_ideal" value="3h"><span class="check"></span>3 horas</label>
+        <label class="opt"><input type="radio" name="tempo_ideal" value="6h"><span class="check"></span>6 horas</label>
+        <label class="opt"><input type="radio" name="tempo_ideal" value="Dia inteiro"><span class="check"></span>Dia inteiro</label>
+      </div>
       <div class="nav">
         <button class="btn btn-secondary" onclick="prev()">←</button>
         <button class="btn btn-primary" onclick="next()">Próxima →</button>
       </div>
     </div>
 
-    <!-- 9 CÔNJUGE -->
-    <div class="step" data-step="9" data-required="conjuge_evento">
-      <div class="question-num">Pergunta 9</div>
+    <!-- 12 PERIODO -->
+    <div class="step" data-step="12">
+      <div class="question-num">Pergunta 12</div>
+      <div class="question">Qual período você considera ideal para iniciar o evento?</div>
+      <div class="options" data-field="periodo" data-mode="single">
+        <label class="opt"><input type="radio" name="periodo" value="Sábado de manhã"><span class="check"></span>Sábado de manhã</label>
+        <label class="opt"><input type="radio" name="periodo" value="Sábado à tarde"><span class="check"></span>Sábado à tarde</label>
+        <label class="opt"><input type="radio" name="periodo" value="Domingo de manhã"><span class="check"></span>Domingo de manhã</label>
+        <label class="opt"><input type="radio" name="periodo" value="Domingo à tarde"><span class="check"></span>Domingo à tarde</label>
+      </div>
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 13 CÔNJUGE -->
+    <div class="step" data-step="13">
+      <div class="question-num">Pergunta 13</div>
       <div class="question">Você considera importante que seu cônjuge participe do evento para aprender com você?</div>
       <div class="options" data-field="conjuge_evento" data-mode="single">
         <label class="opt"><input type="radio" name="conjuge_evento" value="Sim"><span class="check"></span>Sim</label>
@@ -489,46 +635,14 @@
       </div>
     </div>
 
-    <!-- 10 HORÁRIO -->
-    <div class="step" data-step="10" data-required="horario">
-      <div class="question-num">Pergunta 10</div>
-      <div class="question">Qual horário seria melhor para você?</div>
-      <div class="options" data-field="horario" data-mode="single">
-        <label class="opt"><input type="radio" name="horario" value="Sábado de manhã"><span class="check"></span>Sábado de manhã</label>
-        <label class="opt"><input type="radio" name="horario" value="Sábado à tarde"><span class="check"></span>Sábado à tarde</label>
-        <label class="opt"><input type="radio" name="horario" value="Domingo de manhã"><span class="check"></span>Domingo de manhã</label>
-        <label class="opt"><input type="radio" name="horario" value="Domingo à tarde"><span class="check"></span>Domingo à tarde</label>
-      </div>
-      <div class="nav">
-        <button class="btn btn-secondary" onclick="prev()">←</button>
-        <button class="btn btn-primary" onclick="next()">Próxima →</button>
-      </div>
-    </div>
-
-    <!-- 11 DURAÇÃO -->
-    <div class="step" data-step="11" data-required="duracao">
-      <div class="question-num">Pergunta 11</div>
-      <div class="question">Quanto tempo você considera ideal para este evento?</div>
-      <div class="question-hint">Será em um teatro, com palestras de profissionais sobre gestação, parto e primeiros dias com o bebê. Coffee incluído.</div>
-      <div class="options" data-field="duracao" data-mode="single">
-        <label class="opt"><input type="radio" name="duracao" value="3h"><span class="check"></span>3 horas</label>
-        <label class="opt"><input type="radio" name="duracao" value="6h"><span class="check"></span>6 horas</label>
-        <label class="opt"><input type="radio" name="duracao" value="Dia inteiro"><span class="check"></span>Dia inteiro</label>
-      </div>
-      <div class="nav">
-        <button class="btn btn-secondary" onclick="prev()">←</button>
-        <button class="btn btn-primary" onclick="next()">Próxima →</button>
-      </div>
-    </div>
-
-    <!-- 12 FALTA (texto - QUALITY CHECK) -->
-    <div class="step" data-step="12" data-required="falta" data-quality="true">
-      <div class="question-num">Pergunta 12 — última!</div>
-      <div class="question">Na sua opinião, o que mais falta hoje nos eventos para gestantes?</div>
-      <div class="question-hint">Sua resposta aqui pode mudar a forma como esse evento vai ser construído 💕</div>
-      <textarea id="falta" placeholder="Conta pra gente..." minlength="30"></textarea>
-      <div class="char-count"><span id="count_falta">0</span> caracteres (mínimo 30)</div>
-      <div class="feedback" id="feedback_falta"></div>
+    <!-- 14 INVESTIR (texto - QUALITY CHECK) -->
+    <div class="step" data-step="14">
+      <div class="question-num">Pergunta 14 — última!</div>
+      <div class="question">Quanto você acha justo investir nesse evento?</div>
+      <div class="question-hint">Pense em palestras com especialistas, formato de seminário/congresso. Pode usar como base outros eventos da sua área profissional.</div>
+      <textarea id="investir" placeholder="Ex: R$ 250, ou explique como você pensa..." minlength="10"></textarea>
+      <div class="char-count"><span id="count_investir">0</span> caracteres (mínimo 10)</div>
+      <div class="feedback" id="feedback_investir"></div>
       <div class="nav">
         <button class="btn btn-secondary" onclick="prev()">←</button>
         <button class="btn btn-primary" onclick="submitForm()">Enviar respostas ✨</button>
@@ -537,7 +651,7 @@
 
   </div>
 
-  <div class="footer-note">Manual do Recém-nascido · Baby Talks 2026</div>
+  <div class="footer-note">Manual do Recém-nascido · 2026</div>
 </div>
 
 <div class="loading-overlay" id="loading">
@@ -550,7 +664,8 @@
 
 <script>
   const WEBHOOK_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/baby-talks-pesquisa';
-  const TOTAL_STEPS = 12;
+  const TOTAL_STEPS = 14;
+  const DRAFT_KEY = 'pesquisa_draft';
   let currentStep = 0;
   const answers = {};
 
@@ -586,8 +701,6 @@
 
   function validateCurrent() {
     const step = $(`[data-step="${currentStep}"]`);
-    const field = step.dataset.required;
-    if (!field) return true;
     if (currentStep === 1) {
       const v = $('#idade').value.trim();
       if (!v || +v < 14 || +v > 60) { alert('Por favor, digite uma idade válida.'); return false; }
@@ -611,31 +724,50 @@
       }
       return true;
     }
-    if ([5, 9, 10, 11].includes(currentStep)) {
-      const r = step.querySelector(`input[name="${field}"]:checked`);
-      if (!r) { alert('Selecione uma opção.'); return false; }
+    if (currentStep === 5) {
+      if (!step.querySelector('input[name="filho"]:checked')) { alert('Selecione uma opção.'); return false; }
       return true;
     }
-    if (currentStep === 6) {
-      const checks = step.querySelectorAll('input[name="ansiedade"]:checked');
-      if (!checks.length) { alert('Selecione ao menos uma opção.'); return false; }
+    if ([6, 7, 8].includes(currentStep)) {
+      const fieldMap = { 6: 'gestacao', 7: 'parto', 8: 'bebe' };
+      const f = fieldMap[currentStep];
+      const interesse = step.querySelector(`input[name="${f}_interesse"]:checked`);
+      if (!interesse) { alert('Selecione uma opção.'); return false; }
+      if (interesse.value !== 'Não') {
+        const temas = step.querySelectorAll(`input[name="${f}_temas"]:checked`);
+        if (!temas.length) { alert('Selecione pelo menos um tema.'); return false; }
+        const hasOutro = [...temas].some(c => c.value === 'Outro');
+        if (hasOutro && !$('#' + f + '_outro').value.trim()) { alert('Detalhe o "Outro" por favor.'); return false; }
+      }
+      return true;
+    }
+    if (currentStep === 9) {
+      const checks = step.querySelectorAll('input[name="evento_extras"]:checked');
+      if (!checks.length) { alert('Selecione pelo menos uma opção.'); return false; }
       const hasOutro = [...checks].some(c => c.value === 'Outro');
-      if (hasOutro && !$('#ansiedade_outro').value.trim()) { alert('Detalhe o "Outro" por favor.'); return false; }
+      if (hasOutro && !$('#evento_extras_outro').value.trim()) { alert('Detalhe o "Outro" por favor.'); return false; }
       return true;
     }
-    if (currentStep === 7) {
-      const v = $('#aprender').value.trim();
+    if (currentStep === 10) {
+      const v = $('#aprender_evento').value.trim();
       if (v.length < 30) { alert('Por favor, escreva pelo menos 30 caracteres.'); return false; }
       return true;
     }
-    if (currentStep === 8) {
-      const v = $('#investir').value.trim();
-      if (v.length < 10) { alert('Por favor, escreva pelo menos 10 caracteres.'); return false; }
+    if (currentStep === 11) {
+      if (!step.querySelector('input[name="tempo_ideal"]:checked')) { alert('Selecione uma opção.'); return false; }
       return true;
     }
     if (currentStep === 12) {
-      const v = $('#falta').value.trim();
-      if (v.length < 30) { alert('Por favor, escreva pelo menos 30 caracteres.'); return false; }
+      if (!step.querySelector('input[name="periodo"]:checked')) { alert('Selecione uma opção.'); return false; }
+      return true;
+    }
+    if (currentStep === 13) {
+      if (!step.querySelector('input[name="conjuge_evento"]:checked')) { alert('Selecione uma opção.'); return false; }
+      return true;
+    }
+    if (currentStep === 14) {
+      const v = $('#investir').value.trim();
+      if (v.length < 10) { alert('Por favor, escreva pelo menos 10 caracteres.'); return false; }
       return true;
     }
     return true;
@@ -643,31 +775,42 @@
 
   function captureCurrent() {
     const step = $(`[data-step="${currentStep}"]`);
+    if (!step) return;
     if (currentStep === 1) answers.idade = +$('#idade').value;
     if (currentStep === 2) {
-      const trab = step.querySelector('input[name="trabalho"]:checked');
-      answers.trabalho = trab ? trab.value : '';
+      answers.trabalho = step.querySelector('input[name="trabalho"]:checked')?.value || '';
       answers.profissao = $('#profissao').value.trim();
     }
     if (currentStep === 3) answers.profissao_conjuge = $('#profissao_conjuge').value.trim();
     if (currentStep === 4) {
-      const fase = step.querySelector('input[name="fase"]:checked');
-      answers.fase = fase ? fase.value : '';
-      const tri = step.querySelector('input[name="trimestre"]:checked');
-      answers.trimestre = tri ? tri.value : '';
+      answers.fase = step.querySelector('input[name="fase"]:checked')?.value || '';
+      answers.trimestre = step.querySelector('input[name="trimestre"]:checked')?.value || '';
     }
     if (currentStep === 5) answers.filho = step.querySelector('input[name="filho"]:checked')?.value || '';
     if (currentStep === 6) {
-      const checks = step.querySelectorAll('input[name="ansiedade"]:checked');
-      answers.ansiedade = [...checks].map(c => c.value);
-      answers.ansiedade_outro = $('#ansiedade_outro').value.trim();
+      answers.gestacao_interesse = step.querySelector('input[name="gestacao_interesse"]:checked')?.value || '';
+      answers.gestacao_temas = [...step.querySelectorAll('input[name="gestacao_temas"]:checked')].map(c => c.value);
+      answers.gestacao_outro = $('#gestacao_outro').value.trim();
     }
-    if (currentStep === 7) answers.aprender = $('#aprender').value.trim();
-    if (currentStep === 8) answers.investir = $('#investir').value.trim();
-    if (currentStep === 9) answers.conjuge_evento = step.querySelector('input[name="conjuge_evento"]:checked')?.value || '';
-    if (currentStep === 10) answers.horario = step.querySelector('input[name="horario"]:checked')?.value || '';
-    if (currentStep === 11) answers.duracao = step.querySelector('input[name="duracao"]:checked')?.value || '';
-    if (currentStep === 12) answers.falta = $('#falta').value.trim();
+    if (currentStep === 7) {
+      answers.parto_interesse = step.querySelector('input[name="parto_interesse"]:checked')?.value || '';
+      answers.parto_temas = [...step.querySelectorAll('input[name="parto_temas"]:checked')].map(c => c.value);
+      answers.parto_outro = $('#parto_outro').value.trim();
+    }
+    if (currentStep === 8) {
+      answers.bebe_interesse = step.querySelector('input[name="bebe_interesse"]:checked')?.value || '';
+      answers.bebe_temas = [...step.querySelectorAll('input[name="bebe_temas"]:checked')].map(c => c.value);
+      answers.bebe_outro = $('#bebe_outro').value.trim();
+    }
+    if (currentStep === 9) {
+      answers.evento_extras = [...step.querySelectorAll('input[name="evento_extras"]:checked')].map(c => c.value);
+      answers.evento_extras_outro = $('#evento_extras_outro').value.trim();
+    }
+    if (currentStep === 10) answers.aprender_evento = $('#aprender_evento').value.trim();
+    if (currentStep === 11) answers.tempo_ideal = step.querySelector('input[name="tempo_ideal"]:checked')?.value || '';
+    if (currentStep === 12) answers.periodo = step.querySelector('input[name="periodo"]:checked')?.value || '';
+    if (currentStep === 13) answers.conjuge_evento = step.querySelector('input[name="conjuge_evento"]:checked')?.value || '';
+    if (currentStep === 14) answers.investir = $('#investir').value.trim();
   }
 
   // Click handlers para opt
@@ -681,23 +824,31 @@
       $$(`input[name="${name}"]`).forEach(i => i.closest('.opt').classList.remove('selected'));
       input.checked = true;
       opt.classList.add('selected');
-      // expand sub-options
+      // expand sub-options inline (trimestre)
       const expand = opt.dataset.expand;
       if (expand) {
         $$('.sub-options').forEach(s => {
           if (s.id === 'sub-' + expand) s.classList.add('show');
         });
       } else {
-        // se mudou pra outro radio do mesmo grupo, esconde subs
-        if (name === 'fase') {
-          if (input.value !== 'Grávida') $('#sub-trimestre').classList.remove('show');
+        if (name === 'fase' && input.value !== 'Grávida') {
+          $('#sub-trimestre')?.classList.remove('show');
         }
+      }
+      // expand block (sim/talvez nas perguntas 6/7/8)
+      const block = opt.dataset.expandBlock;
+      const parentStep = opt.closest('.step');
+      if (block) {
+        // mostra o bloco
+        parentStep.querySelector('#block-' + block)?.classList.add('show');
+      } else if (['gestacao_interesse','parto_interesse','bebe_interesse'].includes(name)) {
+        // selecionou "Não" → esconde bloco
+        const pre = name.split('_')[0];
+        parentStep.querySelector('#block-' + pre)?.classList.remove('show');
       }
       // conditional fields
       if (name === 'trabalho') {
-        const cond = $('#cond-profissao');
-        if (input.value === 'Sim') cond.classList.add('show');
-        else cond.classList.remove('show');
+        $('#cond-profissao').classList.toggle('show', input.value === 'Sim');
       }
     } else if (input.type === 'checkbox') {
       input.checked = !input.checked;
@@ -711,7 +862,7 @@
   });
 
   // Char counters
-  ['aprender', 'investir', 'falta'].forEach(id => {
+  ['aprender_evento', 'investir'].forEach(id => {
     const el = $('#' + id);
     if (!el) return;
     el.addEventListener('input', () => {
@@ -719,20 +870,18 @@
     });
   });
 
-  // Draft
+  // Draft (rascunho local)
   function saveDraft() {
     captureCurrent();
-    try { localStorage.setItem('baby_talks_draft', JSON.stringify({ answers, step: currentStep, ts: Date.now() })); } catch(e) {}
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ answers, step: currentStep, ts: Date.now() })); } catch(e) {}
   }
   function loadDraft() {
     try {
-      const raw = localStorage.getItem('baby_talks_draft');
+      const raw = localStorage.getItem(DRAFT_KEY);
       if (!raw) return;
       const d = JSON.parse(raw);
-      // só restaura se < 24h
       if (Date.now() - d.ts > 24 * 3600 * 1000) return;
       Object.assign(answers, d.answers || {});
-      // (não restaura step pra não pular intro, usuário recomeça mas as respostas ficam)
     } catch(e) {}
   }
   loadDraft();
@@ -761,12 +910,12 @@
       if (data.aprovado && data.url_acesso) {
         $('#loadingText').textContent = 'Tudo certo! Redirecionando...';
         $('#loadingSub').textContent = 'Liberando seu acesso ao curso 🎁';
-        try { localStorage.removeItem('baby_talks_draft'); } catch(e) {}
+        try { localStorage.removeItem(DRAFT_KEY); } catch(e) {}
         setTimeout(() => { window.location.href = data.url_acesso; }, 1200);
       } else if (data.feedback_campo) {
         $('#loading').classList.remove('show');
         const campo = data.feedback_campo;
-        const stepMap = { aprender: 7, investir: 8, falta: 12 };
+        const stepMap = { aprender_evento: 10, investir: 14 };
         const s = stepMap[campo];
         if (s) {
           goTo(s);
