@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Pesquisa Pré-Evento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    background: #0F0F12;
+    color: #E8E8E8;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  .topbar {
+    background: linear-gradient(135deg, #1a1a1f 0%, #2a1a25 100%);
+    border-bottom: 1px solid rgba(233, 30, 99, .2);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .topbar-logo {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #E91E63, #C2185B);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .topbar h1 { font-size: 16px; font-weight: 600; color: #fff; }
+  .topbar .subtitle { font-size: 11px; color: #888; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+  .updated-at { font-size: 11px; color: #666; }
+  .updated-at strong { color: #aaa; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 24px 20px 80px; }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #2a1a25;
+  }
+  .tab {
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    color: #888;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .2s;
+  }
+  .tab:hover { color: #fff; }
+  .tab.active { color: #E91E63; border-bottom-color: #E91E63; }
+  .view { display: none; }
+  .view.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .kpi {
+    background: linear-gradient(135deg, #1a1a1f 0%, #221820 100%);
+    border: 1px solid rgba(233, 30, 99, .15);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .kpi-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
+  .kpi-sub { font-size: 12px; color: #888; margin-top: 6px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  @media (max-width: 720px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+  .card {
+    background: #1a1a1f;
+    border: 1px solid #2a1a25;
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .card h3 {
+    font-size: 13px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-size: 13px; }
+  .bar-label { flex: 0 0 auto; min-width: 120px; max-width: 250px; color: #E8E8E8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 22px; background: #0F0F12; border-radius: 6px; overflow: hidden; position: relative; }
+  .bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #E91E63, #F06292);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+    min-width: 6px;
+  }
+  .bar-count { flex: 0 0 auto; color: #888; font-size: 12px; min-width: 42px; text-align: right; }
+  .interesse-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 600px) { .interesse-cards { grid-template-columns: 1fr; } }
+  .interesse-bloc { background: #14141a; border-radius: 10px; padding: 14px; }
+  .interesse-bloc .label { font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .interesse-line { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+  .interesse-line .v { color: #888; }
+  .insight-card {
+    background: linear-gradient(135deg, #2a1a25 0%, #1f1419 100%);
+    border: 1px solid rgba(233, 30, 99, .25);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .insight-card h3 { font-size: 13px; color: #E91E63; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; font-weight: 700; }
+  .insight-resumo { font-size: 14px; color: #E8E8E8; margin-bottom: 14px; line-height: 1.6; }
+  .insight-section { margin-top: 14px; }
+  .insight-section-title { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .pill-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { background: rgba(233, 30, 99, .15); color: #F8BBD0; padding: 5px 11px; border-radius: 999px; font-size: 12px; }
+  .acionavel { background: #2a1f10; border-left: 3px solid #FFB74D; padding: 10px 14px; border-radius: 6px; color: #FFE0B2; font-size: 13px; line-height: 1.5; margin-top: 10px; }
+  .acionavel strong { color: #FFB74D; }
+  .faixa { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: #aaa; margin-top: 8px; }
+  .faixa strong { color: #fff; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th, td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #2a1a25;
+    vertical-align: top;
+  }
+  th { color: #888; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; background: #14141a; }
+  tr:hover td { background: #1a1a1f; }
+  td.meta { color: #888; white-space: nowrap; font-size: 12px; }
+  td.aprender, td.investir { color: #E8E8E8; line-height: 1.5; }
+  td.investir { font-weight: 600; color: #F8BBD0; white-space: nowrap; }
+  .table-wrap { overflow-x: auto; background: #14141a; border-radius: 14px; }
+  .empty { text-align: center; padding: 80px 20px; color: #666; }
+  .empty h2 { color: #aaa; margin-bottom: 8px; font-size: 18px; }
+  .splash {
+    position: fixed; inset: 0; background: #0F0F12;
+    display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; z-index: 999;
+  }
+  .splash.hide { display: none; }
+  .spinner {
+    width: 44px; height: 44px;
+    border: 3px solid rgba(233, 30, 99, .2);
+    border-top-color: #E91E63;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .splash-text { color: #888; font-size: 13px; }
+  .auth-screen { max-width: 360px; }
+  .auth-screen h2 { color: #fff; margin-bottom: 8px; }
+  .auth-screen p { color: #888; margin-bottom: 18px; font-size: 14px; }
+  .auth-screen input { width: 100%; padding: 14px 16px; background: #1a1a1f; border: 1px solid #2a1a25; border-radius: 10px; color: #fff; font-family: inherit; font-size: 14px; outline: none; }
+  .auth-screen input:focus { border-color: #E91E63; }
+  .auth-screen button { width: 100%; margin-top: 12px; padding: 14px; background: linear-gradient(135deg, #E91E63, #F06292); color: #fff; border: none; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .auth-screen .err { color: #FF6B6B; font-size: 13px; margin-top: 10px; min-height: 18px; }
+  .filter-row { display: flex; gap: 12px; margin-bottom: 14px; }
+  .filter-row input { flex: 1; padding: 10px 14px; background: #14141a; border: 1px solid #2a1a25; border-radius: 8px; color: #fff; font-family: inherit; font-size: 13px; outline: none; }
+  .filter-row input:focus { border-color: #E91E63; }
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash">
+  <div class="spinner"></div>
+  <div class="splash-text">Carregando dados...</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">📊</div>
+    <div>
+      <h1>Dashboard — Pesquisa Pré-Evento</h1>
+      <div class="subtitle">Manual do Recém-nascido</div>
+    </div>
+  </div>
+  <div class="updated-at" id="updatedAt"></div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" data-view="geral" onclick="showView('geral')">Visão Geral</button>
+    <button class="tab" data-view="abertas" onclick="showView('abertas')">Respostas Abertas</button>
+  </div>
+
+  <!-- VISÃO GERAL -->
+  <div class="view active" id="view-geral">
+    <div class="kpi-row" id="kpis"></div>
+
+    <!-- Insights Claude -->
+    <div class="grid-2" id="insights"></div>
+
+    <!-- Demografia -->
+    <div class="grid-2">
+      <div class="card">
+        <h3>Idade — Distribuição</h3>
+        <div id="bar-idade"></div>
+      </div>
+      <div class="card">
+        <h3>Fase</h3>
+        <div id="bar-fase"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Filho</h3>
+        <div id="bar-filho"></div>
+      </div>
+      <div class="card">
+        <h3>Trimestre <span style="color:#666;font-weight:400;">(grávidas)</span></h3>
+        <div id="bar-trimestre"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Top 10 cidades</h3>
+        <div id="bar-cidades"></div>
+      </div>
+      <div class="card">
+        <h3>Top 10 profissões</h3>
+        <div id="bar-profissoes"></div>
+      </div>
+    </div>
+
+    <!-- Interesse + temas -->
+    <div class="card" style="margin-bottom:16px">
+      <h3>Interesse nos blocos temáticos</h3>
+      <div class="interesse-cards" id="interesseCards"></div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>Top 5 temas — Gestação</h3>
+        <div id="bar-gestacao-temas"></div>
+      </div>
+      <div class="card">
+        <h3>Top 5 temas — Parto</h3>
+        <div id="bar-parto-temas"></div>
+      </div>
+      <div class="card">
+        <h3>Top 5 temas — Primeiros meses</h3>
+        <div id="bar-bebe-temas"></div>
+      </div>
+    </div>
+
+    <!-- Logística do evento -->
+    <div class="card" style="margin-bottom:16px">
+      <h3>Top 5 — O que esperam ter no evento</h3>
+      <div id="bar-extras"></div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <h3>Tempo ideal</h3>
+        <div id="bar-tempo"></div>
+      </div>
+      <div class="card">
+        <h3>Período preferido</h3>
+        <div id="bar-periodo"></div>
+      </div>
+      <div class="card">
+        <h3>Cônjuge participar?</h3>
+        <div id="bar-conjuge"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESPOSTAS ABERTAS -->
+  <div class="view" id="view-abertas">
+    <div class="filter-row">
+      <input type="text" id="filter" placeholder="Buscar por email, cidade ou texto..." oninput="renderAbertas()">
+    </div>
+    <div class="table-wrap">
+      <table id="tabela-abertas">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Quem</th>
+            <th>O que gostaria de aprender</th>
+            <th>Investir</th>
+          </tr>
+        </thead>
+        <tbody id="abertasTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/pesquisa-dashboard';
+  const TOKEN_KEY = 'dashboard_admin_token';
+  let DATA = null;
+
+  function getToken() {
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get('t') || params.get('token') || '';
+    if (fromUrl) {
+      try { localStorage.setItem(TOKEN_KEY, fromUrl); } catch(e) {}
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, '', cleanUrl);
+      return fromUrl;
+    }
+    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch(e) { return ''; }
+  }
+
+  function showView(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+  }
+
+  function showAuthScreen(erro) {
+    document.getElementById('splash').innerHTML = `
+      <div class="auth-screen">
+        <h2>Acesso restrito</h2>
+        <p>Esse painel é só para administradores. Cole o token de acesso abaixo:</p>
+        <input type="text" id="tokenInput" placeholder="token..." autofocus>
+        <button onclick="trySaveToken()">Entrar</button>
+        <div class="err">${erro || ''}</div>
+      </div>
+    `;
+    document.getElementById('tokenInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') trySaveToken();
+    });
+  }
+
+  function trySaveToken() {
+    const v = document.getElementById('tokenInput').value.trim();
+    if (!v) return;
+    try { localStorage.setItem(TOKEN_KEY, v); } catch(e) {}
+    location.reload();
+  }
+
+  function bars(containerId, items, options = {}) {
+    const c = document.getElementById(containerId);
+    if (!c) return;
+    if (!items || !items.length) {
+      c.innerHTML = '<div style="color:#666;font-size:13px;padding:10px 0">Sem dados ainda</div>';
+      return;
+    }
+    const max = Math.max(...items.map(i => i.count));
+    const total = options.totalGroup || items.reduce((s, i) => s + i.count, 0);
+    c.innerHTML = items.map(i => {
+      const w = max ? (i.count / max * 100) : 0;
+      const pct = total ? Math.round(i.count / total * 100) : 0;
+      return `
+        <div class="bar-row">
+          <div class="bar-label" title="${i.nome}">${i.nome || '—'}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${w}%">${pct}%</div></div>
+          <div class="bar-count">${i.count}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderKPIs(stats) {
+    const c = document.getElementById('kpis');
+    c.innerHTML = `
+      <div class="kpi"><div class="kpi-label">Respondentes</div><div class="kpi-value">${stats.total}</div><div class="kpi-sub">aprovados</div></div>
+      <div class="kpi"><div class="kpi-label">Idade média</div><div class="kpi-value">${stats.idade.media}</div><div class="kpi-sub">${stats.idade.min}–${stats.idade.max} anos</div></div>
+      <div class="kpi"><div class="kpi-label">Cidades únicas</div><div class="kpi-value">${stats.cidades_top.length}${stats.cidades_top.length >= 10 ? '+' : ''}</div><div class="kpi-sub">${stats.cidades_top[0]?.nome || '—'} lidera</div></div>
+      <div class="kpi"><div class="kpi-label">Trabalham</div><div class="kpi-value">${pct(stats.trabalho, 'Sim')}%</div><div class="kpi-sub">das respondentes</div></div>
+      <div class="kpi"><div class="kpi-label">Cônjuge no evento</div><div class="kpi-value">${pct(stats.conjuge_evento, 'Sim')}%</div><div class="kpi-sub">querem que participe</div></div>
+    `;
+  }
+
+  function pct(arr, valor) {
+    const total = (arr || []).reduce((s, i) => s + i.count, 0);
+    const v = (arr || []).find(i => i.nome === valor);
+    if (!v || !total) return 0;
+    return Math.round(v.count / total * 100);
+  }
+
+  function renderInteresseCards(stats) {
+    const c = document.getElementById('interesseCards');
+    const items = [
+      { titulo: '🤰 Gestação', arr: stats.gestacao_interesse },
+      { titulo: '👶 Parto', arr: stats.parto_interesse },
+      { titulo: '🍼 Primeiros meses', arr: stats.bebe_interesse },
+    ];
+    c.innerHTML = items.map(({ titulo, arr }) => {
+      const total = arr.reduce((s, i) => s + i.count, 0);
+      const lines = ['Sim','Talvez','Não'].map(v => {
+        const it = arr.find(x => x.nome === v);
+        const cnt = it ? it.count : 0;
+        const p = total ? Math.round(cnt / total * 100) : 0;
+        return `<div class="interesse-line"><span>${v}</span><span class="v">${cnt} · ${p}%</span></div>`;
+      }).join('');
+      return `<div class="interesse-bloc"><div class="label">${titulo}</div>${lines}</div>`;
+    }).join('');
+  }
+
+  function renderInsights(insights) {
+    const c = document.getElementById('insights');
+    if (!insights || insights._erro) {
+      c.innerHTML = `<div class="insight-card"><h3>Insights</h3><div style="color:#888;font-size:13px">${insights?._erro || 'Sem dados suficientes pra insights ainda.'}</div></div>`;
+      return;
+    }
+    const ap = insights.aprender_evento || {};
+    const inv = insights.investir || {};
+    c.innerHTML = `
+      <div class="insight-card">
+        <h3>🎓 P11 — O que querem aprender</h3>
+        <div class="insight-resumo">${ap.resumo || '—'}</div>
+        ${ap.top_temas?.length ? `
+          <div class="insight-section">
+            <div class="insight-section-title">Top temas citados</div>
+            <div class="pill-list">${ap.top_temas.map(t => `<span class="pill">${t}</span>`).join('')}</div>
+          </div>` : ''}
+        ${ap.dores_recorrentes?.length ? `
+          <div class="insight-section">
+            <div class="insight-section-title">Dores e medos recorrentes</div>
+            <div class="pill-list">${ap.dores_recorrentes.map(t => `<span class="pill">${t}</span>`).join('')}</div>
+          </div>` : ''}
+        ${ap.insight_acionavel ? `<div class="acionavel"><strong>💡 Sugestão:</strong> ${ap.insight_acionavel}</div>` : ''}
+      </div>
+      <div class="insight-card">
+        <h3>💰 P15 — Quanto investiriam</h3>
+        <div class="insight-resumo">${inv.resumo || '—'}</div>
+        ${inv.faixa_predominante ? `
+          <div class="faixa">
+            <div>Faixa predominante: <strong>${inv.faixa_predominante}</strong></div>
+          </div>
+          <div class="faixa">
+            <div>Mínimo citado: <strong>${inv.valor_minimo_citado || '—'}</strong></div>
+            <div>Máximo citado: <strong>${inv.valor_maximo_citado || '—'}</strong></div>
+          </div>` : ''}
+        ${inv.insight_acionavel ? `<div class="acionavel"><strong>💡 Sugestão:</strong> ${inv.insight_acionavel}</div>` : ''}
+      </div>
+    `;
+  }
+
+  function renderGeral(d) {
+    const s = d.stats;
+    document.getElementById('updatedAt').innerHTML = `<strong>Atualizado:</strong> ${d.gerado_em}`;
+    renderKPIs(s);
+    renderInsights(d.insights);
+    // Idade - faixas
+    const faixasArr = Object.entries(s.idade.faixas).map(([nome, count]) => ({ nome, count }));
+    bars('bar-idade', faixasArr);
+    bars('bar-fase', s.fase);
+    bars('bar-filho', s.filho);
+    bars('bar-trimestre', s.trimestre);
+    bars('bar-cidades', s.cidades_top);
+    bars('bar-profissoes', s.profissoes_top);
+    renderInteresseCards(s);
+    bars('bar-gestacao-temas', s.gestacao_temas_top);
+    bars('bar-parto-temas', s.parto_temas_top);
+    bars('bar-bebe-temas', s.bebe_temas_top);
+    bars('bar-extras', s.evento_extras_top);
+    bars('bar-tempo', s.tempo_ideal);
+    bars('bar-periodo', s.periodo);
+    bars('bar-conjuge', s.conjuge_evento);
+  }
+
+  function renderAbertas() {
+    if (!DATA) return;
+    const filter = (document.getElementById('filter').value || '').toLowerCase().trim();
+    const items = (DATA.abertas || []).filter(a => {
+      if (!filter) return true;
+      const blob = [a.email, a.cidade, a.aprender_evento, a.investir, a.fase, a.idade].join(' ').toLowerCase();
+      return blob.includes(filter);
+    });
+    const tbody = document.getElementById('abertasTbody');
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#666;padding:40px">Nenhuma resposta encontrada.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = items.map(a => `
+      <tr>
+        <td class="meta">${(a.criado_em || '').substring(0, 16)}</td>
+        <td class="meta">
+          ${escapeHtml(a.email || '—')}<br>
+          <span style="color:#666">${escapeHtml(a.cidade || '—')} · ${a.idade || '—'} anos · ${escapeHtml(a.fase || '—')}</span>
+        </td>
+        <td class="aprender">${escapeHtml(a.aprender_evento || '—')}</td>
+        <td class="investir">${escapeHtml(a.investir || '—')}</td>
+      </tr>
+    `).join('');
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  async function init() {
+    const token = getToken();
+    if (!token) { showAuthScreen(); return; }
+    try {
+      const r = await fetch(`${API_URL}?token=${encodeURIComponent(token)}`);
+      if (r.status === 401) {
+        try { localStorage.removeItem(TOKEN_KEY); } catch(e) {}
+        showAuthScreen('Token inválido.'); return;
+      }
+      const data = await r.json();
+      DATA = data;
+      if (!data.stats || data.stats.total === 0) {
+        document.getElementById('splash').classList.add('hide');
+        document.getElementById('view-geral').innerHTML = `
+          <div class="empty">
+            <h2>Sem respostas ainda</h2>
+            <p>Quando começarem a chegar respostas válidas, os dados aparecem aqui.</p>
+          </div>`;
+        return;
+      }
+      renderGeral(data);
+      renderAbertas();
+      document.getElementById('splash').classList.add('hide');
+    } catch(err) {
+      console.error(err);
+      showAuthScreen('Erro de conexão. Tente recarregar.');
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
