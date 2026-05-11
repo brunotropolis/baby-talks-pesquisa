@@ -72,8 +72,13 @@
     display: flex;
     flex-direction: column;
   }
+  /* No mobile, a intro não deve esticar até o fim — botão fica logo abaixo do texto */
+  .card.is-intro {
+    flex: 0 0 auto;
+  }
   .step { display: none; animation: fadeIn .4s ease; }
   .step.active { display: flex; flex-direction: column; flex: 1; }
+  .step.is-intro.active { flex: 0 0 auto; }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
@@ -174,7 +179,7 @@
     color: #888;
     margin-bottom: 12px;
   }
-  input[type="text"], input[type="number"], textarea {
+  input[type="text"], input[type="email"], input[type="number"], textarea {
     width: 100%;
     padding: 16px 18px;
     border: 2px solid #F5E0E8;
@@ -187,7 +192,7 @@
     transition: border-color .2s;
     -webkit-appearance: none;
   }
-  input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+  input[type="text"]:focus, input[type="email"]:focus, input[type="number"]:focus, textarea:focus {
     border-color: #E91E63;
   }
   textarea {
@@ -216,6 +221,7 @@
     margin-top: auto;
     padding-top: 24px;
   }
+  .step.is-intro .nav { margin-top: 16px; padding-top: 8px; }
   .btn {
     flex: 1;
     padding: 16px 24px;
@@ -256,14 +262,14 @@
   }
   .intro p {
     color: #555;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     font-size: 15px;
   }
   .gift {
     background: linear-gradient(135deg, #FCE4EC, #F8BBD0);
     border-radius: 16px;
-    padding: 18px;
-    margin: 20px 0;
+    padding: 16px;
+    margin: 16px 0 12px;
     font-size: 14px;
     color: #880E4F;
     font-weight: 500;
@@ -322,9 +328,13 @@
     padding: 8px;
   }
   @media (max-width: 480px) {
-    .card { padding: 24px 18px; border-radius: 20px; }
+    body { padding: 16px 14px; }
+    .header { margin-bottom: 16px; }
+    .card { padding: 22px 18px; border-radius: 20px; }
     .question { font-size: 19px; }
-    .intro h1 { font-size: 22px; }
+    .intro h1 { font-size: 21px; margin-bottom: 10px; }
+    .intro p { font-size: 14px; margin-bottom: 10px; }
+    .gift { padding: 14px; margin: 12px 0 8px; }
   }
 </style>
 </head>
@@ -337,22 +347,22 @@
 
   <div class="progress-wrap" id="progressWrap" style="display:none">
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-text" id="progressText">Pergunta 1 de 14</div>
+    <div class="progress-text" id="progressText">Pergunta 1 de 15</div>
   </div>
 
-  <div class="card">
+  <div class="card" id="card">
 
     <!-- INTRO -->
-    <div class="step active" data-step="0">
+    <div class="step is-intro active" data-step="0">
       <div class="intro">
         <h1>Estamos criando uma experiência inédita para gestantes ✨</h1>
         <p>Um evento presencial pensado para acolher, preparar e conectar famílias para a chegada do bebê.</p>
-        <p>Queremos construir algo realmente especial. Pedimos que você responda com atenção e sinceridade — assim conseguimos entender o que as famílias esperam e precisam nesse momento.</p>
+        <p>Queremos construir algo realmente especial. Pedimos que você responda com atenção e sinceridade.</p>
         <div class="gift">
-          🎁 Como agradecimento, todas que responderem de maneira válida ganham:
+          🎁 Quem responder de maneira válida ganha:
           <strong>Curso "O Dia do Parto" — 11 aulas</strong>
         </div>
-        <p style="font-size:13px;color:#888;">São 14 perguntas. Leva uns 5 minutos.</p>
+        <p style="font-size:13px;color:#888;margin-bottom:0;">São 15 perguntas. Leva uns 5 minutos.</p>
       </div>
       <div class="nav">
         <button class="btn btn-primary" onclick="start()">Começar →</button>
@@ -374,7 +384,7 @@
     <div class="step" data-step="2">
       <div class="question-num">Pergunta 2</div>
       <div class="question">Você está trabalhando no momento?</div>
-      <div class="options" data-field="trabalho" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt"><input type="radio" name="trabalho" value="Sim"><span class="check"></span>Sim</label>
         <label class="opt"><input type="radio" name="trabalho" value="Não"><span class="check"></span>Não</label>
       </div>
@@ -388,23 +398,34 @@
       </div>
     </div>
 
-    <!-- 3 PROFISSÃO CÔNJUGE -->
+    <!-- 3 E-MAIL -->
     <div class="step" data-step="3">
       <div class="question-num">Pergunta 3</div>
-      <div class="question">Qual a profissão do seu cônjuge?</div>
-      <div class="question-hint">Se não tem cônjuge, escreva "Não tenho"</div>
-      <input type="text" id="profissao_conjuge" placeholder="Profissão do cônjuge">
+      <div class="question">Qual o seu e-mail?</div>
+      <div class="question-hint">Vamos usar para te avisar sobre o evento e enviar seu acesso ao curso.</div>
+      <input type="email" id="email" placeholder="seu@email.com" autocomplete="email" inputmode="email">
       <div class="nav">
         <button class="btn btn-secondary" onclick="prev()">←</button>
         <button class="btn btn-primary" onclick="next()">Próxima →</button>
       </div>
     </div>
 
-    <!-- 4 FASE -->
+    <!-- 4 CIDADE -->
     <div class="step" data-step="4">
       <div class="question-num">Pergunta 4</div>
+      <div class="question">Em qual cidade você mora?</div>
+      <input type="text" id="cidade" placeholder="Cidade — Estado" autocomplete="address-level2">
+      <div class="nav">
+        <button class="btn btn-secondary" onclick="prev()">←</button>
+        <button class="btn btn-primary" onclick="next()">Próxima →</button>
+      </div>
+    </div>
+
+    <!-- 5 FASE -->
+    <div class="step" data-step="5">
+      <div class="question-num">Pergunta 5</div>
       <div class="question">Em qual fase você está?</div>
-      <div class="options" data-field="fase" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt"><input type="radio" name="fase" value="Tentando engravidar"><span class="check"></span>Tentando engravidar</label>
         <label class="opt" data-expand="trimestre"><input type="radio" name="fase" value="Grávida"><span class="check"></span>Grávida</label>
         <div class="sub-options" id="sub-trimestre">
@@ -421,11 +442,11 @@
       </div>
     </div>
 
-    <!-- 5 FILHO -->
-    <div class="step" data-step="5">
-      <div class="question-num">Pergunta 5</div>
+    <!-- 6 FILHO -->
+    <div class="step" data-step="6">
+      <div class="question-num">Pergunta 6</div>
       <div class="question">Esse é seu:</div>
-      <div class="options" data-field="filho" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt"><input type="radio" name="filho" value="Primeiro filho"><span class="check"></span>Primeiro filho</label>
         <label class="opt"><input type="radio" name="filho" value="Segundo filho"><span class="check"></span>Segundo filho</label>
         <label class="opt"><input type="radio" name="filho" value="Terceiro filho"><span class="check"></span>Terceiro filho</label>
@@ -437,11 +458,11 @@
       </div>
     </div>
 
-    <!-- 6 GESTAÇÃO -->
-    <div class="step" data-step="6">
-      <div class="question-num">Pergunta 6</div>
+    <!-- 7 GESTAÇÃO -->
+    <div class="step" data-step="7">
+      <div class="question-num">Pergunta 7</div>
       <div class="question">Você considera importante aprender mais sobre <strong style="color:#E91E63">GESTAÇÃO</strong> em um evento presencial?</div>
-      <div class="options" data-field="gestacao_interesse" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt" data-expand-block="gestacao"><input type="radio" name="gestacao_interesse" value="Sim"><span class="check"></span>Sim</label>
         <label class="opt"><input type="radio" name="gestacao_interesse" value="Não"><span class="check"></span>Não</label>
         <label class="opt" data-expand-block="gestacao"><input type="radio" name="gestacao_interesse" value="Talvez"><span class="check"></span>Talvez</label>
@@ -473,11 +494,11 @@
       </div>
     </div>
 
-    <!-- 7 PARTO -->
-    <div class="step" data-step="7">
-      <div class="question-num">Pergunta 7</div>
+    <!-- 8 PARTO -->
+    <div class="step" data-step="8">
+      <div class="question-num">Pergunta 8</div>
       <div class="question">Você considera importante aprender mais sobre <strong style="color:#E91E63">PARTO</strong> em um evento presencial?</div>
-      <div class="options" data-field="parto_interesse" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt" data-expand-block="parto"><input type="radio" name="parto_interesse" value="Sim"><span class="check"></span>Sim</label>
         <label class="opt"><input type="radio" name="parto_interesse" value="Não"><span class="check"></span>Não</label>
         <label class="opt" data-expand-block="parto"><input type="radio" name="parto_interesse" value="Talvez"><span class="check"></span>Talvez</label>
@@ -511,11 +532,11 @@
       </div>
     </div>
 
-    <!-- 8 PRIMEIROS MESES BEBÊ -->
-    <div class="step" data-step="8">
-      <div class="question-num">Pergunta 8</div>
+    <!-- 9 PRIMEIROS MESES BEBÊ -->
+    <div class="step" data-step="9">
+      <div class="question-num">Pergunta 9</div>
       <div class="question">Você considera importante aprender mais sobre os <strong style="color:#E91E63">PRIMEIROS MESES DO BEBÊ</strong> em um evento presencial?</div>
-      <div class="options" data-field="bebe_interesse" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt" data-expand-block="bebe"><input type="radio" name="bebe_interesse" value="Sim"><span class="check"></span>Sim</label>
         <label class="opt"><input type="radio" name="bebe_interesse" value="Não"><span class="check"></span>Não</label>
         <label class="opt" data-expand-block="bebe"><input type="radio" name="bebe_interesse" value="Talvez"><span class="check"></span>Talvez</label>
@@ -550,9 +571,9 @@
       </div>
     </div>
 
-    <!-- 9 EXTRAS DO EVENTO -->
-    <div class="step" data-step="9">
-      <div class="question-num">Pergunta 9</div>
+    <!-- 10 EXTRAS DO EVENTO -->
+    <div class="step" data-step="10">
+      <div class="question-num">Pergunta 10</div>
       <div class="question">O que você acha importante ter nos eventos?</div>
       <div class="question-hint">Pode selecionar mais de um</div>
       <div class="options" data-mode="multi">
@@ -574,9 +595,9 @@
       </div>
     </div>
 
-    <!-- 10 APRENDER (texto - QUALITY CHECK) -->
-    <div class="step" data-step="10">
-      <div class="question-num">Pergunta 10</div>
+    <!-- 11 APRENDER (texto - QUALITY CHECK) -->
+    <div class="step" data-step="11">
+      <div class="question-num">Pergunta 11</div>
       <div class="question">O que você mais gostaria de aprender em um evento presencial?</div>
       <div class="question-hint">Capricha aqui — é o que vai guiar nossas palestras 💕</div>
       <textarea id="aprender_evento" placeholder="Escreva com suas palavras..." minlength="30"></textarea>
@@ -588,12 +609,12 @@
       </div>
     </div>
 
-    <!-- 11 TEMPO -->
-    <div class="step" data-step="11">
-      <div class="question-num">Pergunta 11</div>
+    <!-- 12 TEMPO -->
+    <div class="step" data-step="12">
+      <div class="question-num">Pergunta 12</div>
       <div class="question">Quanto tempo você considera ideal para este evento?</div>
       <div class="question-hint">Será em um teatro, com palestras de profissionais sobre gestação, parto e primeiros dias com o bebê.</div>
-      <div class="options" data-field="tempo_ideal" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt"><input type="radio" name="tempo_ideal" value="3h"><span class="check"></span>3 horas</label>
         <label class="opt"><input type="radio" name="tempo_ideal" value="6h"><span class="check"></span>6 horas</label>
         <label class="opt"><input type="radio" name="tempo_ideal" value="Dia inteiro"><span class="check"></span>Dia inteiro</label>
@@ -604,11 +625,11 @@
       </div>
     </div>
 
-    <!-- 12 PERIODO -->
-    <div class="step" data-step="12">
-      <div class="question-num">Pergunta 12</div>
+    <!-- 13 PERIODO -->
+    <div class="step" data-step="13">
+      <div class="question-num">Pergunta 13</div>
       <div class="question">Qual período você considera ideal para iniciar o evento?</div>
-      <div class="options" data-field="periodo" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt"><input type="radio" name="periodo" value="Sábado de manhã"><span class="check"></span>Sábado de manhã</label>
         <label class="opt"><input type="radio" name="periodo" value="Sábado à tarde"><span class="check"></span>Sábado à tarde</label>
         <label class="opt"><input type="radio" name="periodo" value="Domingo de manhã"><span class="check"></span>Domingo de manhã</label>
@@ -620,11 +641,11 @@
       </div>
     </div>
 
-    <!-- 13 CÔNJUGE -->
-    <div class="step" data-step="13">
-      <div class="question-num">Pergunta 13</div>
+    <!-- 14 CÔNJUGE -->
+    <div class="step" data-step="14">
+      <div class="question-num">Pergunta 14</div>
       <div class="question">Você considera importante que seu cônjuge participe do evento para aprender com você?</div>
-      <div class="options" data-field="conjuge_evento" data-mode="single">
+      <div class="options" data-mode="single">
         <label class="opt"><input type="radio" name="conjuge_evento" value="Sim"><span class="check"></span>Sim</label>
         <label class="opt"><input type="radio" name="conjuge_evento" value="Não"><span class="check"></span>Não</label>
         <label class="opt"><input type="radio" name="conjuge_evento" value="Talvez"><span class="check"></span>Talvez</label>
@@ -635,13 +656,12 @@
       </div>
     </div>
 
-    <!-- 14 INVESTIR (texto - QUALITY CHECK) -->
-    <div class="step" data-step="14">
-      <div class="question-num">Pergunta 14 — última!</div>
+    <!-- 15 INVESTIR (texto - QUALITY CHECK) -->
+    <div class="step" data-step="15">
+      <div class="question-num">Pergunta 15 — última!</div>
       <div class="question">Quanto você acha justo investir nesse evento?</div>
       <div class="question-hint">Pense em palestras com especialistas, formato de seminário/congresso. Pode usar como base outros eventos da sua área profissional.</div>
-      <textarea id="investir" placeholder="Ex: R$ 250, ou explique como você pensa..." minlength="10"></textarea>
-      <div class="char-count"><span id="count_investir">0</span> caracteres (mínimo 10)</div>
+      <textarea id="investir" placeholder="Sua resposta..."></textarea>
       <div class="feedback" id="feedback_investir"></div>
       <div class="nav">
         <button class="btn btn-secondary" onclick="prev()">←</button>
@@ -664,7 +684,7 @@
 
 <script>
   const WEBHOOK_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/baby-talks-pesquisa';
-  const TOTAL_STEPS = 14;
+  const TOTAL_STEPS = 15;
   const DRAFT_KEY = 'pesquisa_draft';
   let currentStep = 0;
   const answers = {};
@@ -680,6 +700,8 @@
     if (!target) return;
     target.classList.add('active');
     currentStep = n;
+    // Card intro tem flex auto pra não esticar no mobile
+    $('#card').classList.toggle('is-intro', n === 0);
     if (n >= 1 && n <= TOTAL_STEPS) {
       $('#progressWrap').style.display = 'block';
       $('#progressFill').style.width = ((n / TOTAL_STEPS) * 100) + '%';
@@ -699,6 +721,10 @@
     if (currentStep < TOTAL_STEPS) goTo(currentStep + 1);
   }
 
+  function isValidEmail(s) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+  }
+
   function validateCurrent() {
     const step = $(`[data-step="${currentStep}"]`);
     if (currentStep === 1) {
@@ -713,10 +739,15 @@
       return true;
     }
     if (currentStep === 3) {
-      if (!$('#profissao_conjuge').value.trim()) { alert('Por favor, preencha o campo.'); return false; }
+      const v = $('#email').value.trim();
+      if (!isValidEmail(v)) { alert('Por favor, digite um e-mail válido.'); return false; }
       return true;
     }
     if (currentStep === 4) {
+      if (!$('#cidade').value.trim()) { alert('Por favor, digite sua cidade.'); return false; }
+      return true;
+    }
+    if (currentStep === 5) {
       const fase = step.querySelector('input[name="fase"]:checked');
       if (!fase) { alert('Selecione uma opção.'); return false; }
       if (fase.value === 'Grávida' && !step.querySelector('input[name="trimestre"]:checked')) {
@@ -724,12 +755,12 @@
       }
       return true;
     }
-    if (currentStep === 5) {
+    if (currentStep === 6) {
       if (!step.querySelector('input[name="filho"]:checked')) { alert('Selecione uma opção.'); return false; }
       return true;
     }
-    if ([6, 7, 8].includes(currentStep)) {
-      const fieldMap = { 6: 'gestacao', 7: 'parto', 8: 'bebe' };
+    if ([7, 8, 9].includes(currentStep)) {
+      const fieldMap = { 7: 'gestacao', 8: 'parto', 9: 'bebe' };
       const f = fieldMap[currentStep];
       const interesse = step.querySelector(`input[name="${f}_interesse"]:checked`);
       if (!interesse) { alert('Selecione uma opção.'); return false; }
@@ -741,33 +772,33 @@
       }
       return true;
     }
-    if (currentStep === 9) {
+    if (currentStep === 10) {
       const checks = step.querySelectorAll('input[name="evento_extras"]:checked');
       if (!checks.length) { alert('Selecione pelo menos uma opção.'); return false; }
       const hasOutro = [...checks].some(c => c.value === 'Outro');
       if (hasOutro && !$('#evento_extras_outro').value.trim()) { alert('Detalhe o "Outro" por favor.'); return false; }
       return true;
     }
-    if (currentStep === 10) {
+    if (currentStep === 11) {
       const v = $('#aprender_evento').value.trim();
       if (v.length < 30) { alert('Por favor, escreva pelo menos 30 caracteres.'); return false; }
       return true;
     }
-    if (currentStep === 11) {
+    if (currentStep === 12) {
       if (!step.querySelector('input[name="tempo_ideal"]:checked')) { alert('Selecione uma opção.'); return false; }
       return true;
     }
-    if (currentStep === 12) {
+    if (currentStep === 13) {
       if (!step.querySelector('input[name="periodo"]:checked')) { alert('Selecione uma opção.'); return false; }
       return true;
     }
-    if (currentStep === 13) {
+    if (currentStep === 14) {
       if (!step.querySelector('input[name="conjuge_evento"]:checked')) { alert('Selecione uma opção.'); return false; }
       return true;
     }
-    if (currentStep === 14) {
+    if (currentStep === 15) {
       const v = $('#investir').value.trim();
-      if (v.length < 10) { alert('Por favor, escreva pelo menos 10 caracteres.'); return false; }
+      if (!v) { alert('Por favor, escreva sua opinião.'); return false; }
       return true;
     }
     return true;
@@ -781,39 +812,40 @@
       answers.trabalho = step.querySelector('input[name="trabalho"]:checked')?.value || '';
       answers.profissao = $('#profissao').value.trim();
     }
-    if (currentStep === 3) answers.profissao_conjuge = $('#profissao_conjuge').value.trim();
-    if (currentStep === 4) {
+    if (currentStep === 3) answers.email = $('#email').value.trim();
+    if (currentStep === 4) answers.cidade = $('#cidade').value.trim();
+    if (currentStep === 5) {
       answers.fase = step.querySelector('input[name="fase"]:checked')?.value || '';
       answers.trimestre = step.querySelector('input[name="trimestre"]:checked')?.value || '';
     }
-    if (currentStep === 5) answers.filho = step.querySelector('input[name="filho"]:checked')?.value || '';
-    if (currentStep === 6) {
+    if (currentStep === 6) answers.filho = step.querySelector('input[name="filho"]:checked')?.value || '';
+    if (currentStep === 7) {
       answers.gestacao_interesse = step.querySelector('input[name="gestacao_interesse"]:checked')?.value || '';
       answers.gestacao_temas = [...step.querySelectorAll('input[name="gestacao_temas"]:checked')].map(c => c.value);
       answers.gestacao_outro = $('#gestacao_outro').value.trim();
     }
-    if (currentStep === 7) {
+    if (currentStep === 8) {
       answers.parto_interesse = step.querySelector('input[name="parto_interesse"]:checked')?.value || '';
       answers.parto_temas = [...step.querySelectorAll('input[name="parto_temas"]:checked')].map(c => c.value);
       answers.parto_outro = $('#parto_outro').value.trim();
     }
-    if (currentStep === 8) {
+    if (currentStep === 9) {
       answers.bebe_interesse = step.querySelector('input[name="bebe_interesse"]:checked')?.value || '';
       answers.bebe_temas = [...step.querySelectorAll('input[name="bebe_temas"]:checked')].map(c => c.value);
       answers.bebe_outro = $('#bebe_outro').value.trim();
     }
-    if (currentStep === 9) {
+    if (currentStep === 10) {
       answers.evento_extras = [...step.querySelectorAll('input[name="evento_extras"]:checked')].map(c => c.value);
       answers.evento_extras_outro = $('#evento_extras_outro').value.trim();
     }
-    if (currentStep === 10) answers.aprender_evento = $('#aprender_evento').value.trim();
-    if (currentStep === 11) answers.tempo_ideal = step.querySelector('input[name="tempo_ideal"]:checked')?.value || '';
-    if (currentStep === 12) answers.periodo = step.querySelector('input[name="periodo"]:checked')?.value || '';
-    if (currentStep === 13) answers.conjuge_evento = step.querySelector('input[name="conjuge_evento"]:checked')?.value || '';
-    if (currentStep === 14) answers.investir = $('#investir').value.trim();
+    if (currentStep === 11) answers.aprender_evento = $('#aprender_evento').value.trim();
+    if (currentStep === 12) answers.tempo_ideal = step.querySelector('input[name="tempo_ideal"]:checked')?.value || '';
+    if (currentStep === 13) answers.periodo = step.querySelector('input[name="periodo"]:checked')?.value || '';
+    if (currentStep === 14) answers.conjuge_evento = step.querySelector('input[name="conjuge_evento"]:checked')?.value || '';
+    if (currentStep === 15) answers.investir = $('#investir').value.trim();
   }
 
-  // Click handlers para opt
+  // Click handlers
   document.addEventListener('click', e => {
     const opt = e.target.closest('.opt');
     if (!opt) return;
@@ -824,7 +856,6 @@
       $$(`input[name="${name}"]`).forEach(i => i.closest('.opt').classList.remove('selected'));
       input.checked = true;
       opt.classList.add('selected');
-      // expand sub-options inline (trimestre)
       const expand = opt.dataset.expand;
       if (expand) {
         $$('.sub-options').forEach(s => {
@@ -835,18 +866,14 @@
           $('#sub-trimestre')?.classList.remove('show');
         }
       }
-      // expand block (sim/talvez nas perguntas 6/7/8)
       const block = opt.dataset.expandBlock;
       const parentStep = opt.closest('.step');
       if (block) {
-        // mostra o bloco
         parentStep.querySelector('#block-' + block)?.classList.add('show');
       } else if (['gestacao_interesse','parto_interesse','bebe_interesse'].includes(name)) {
-        // selecionou "Não" → esconde bloco
         const pre = name.split('_')[0];
         parentStep.querySelector('#block-' + pre)?.classList.remove('show');
       }
-      // conditional fields
       if (name === 'trabalho') {
         $('#cond-profissao').classList.toggle('show', input.value === 'Sim');
       }
@@ -862,7 +889,7 @@
   });
 
   // Char counters
-  ['aprender_evento', 'investir'].forEach(id => {
+  ['aprender_evento'].forEach(id => {
     const el = $('#' + id);
     if (!el) return;
     el.addEventListener('input', () => {
@@ -915,7 +942,7 @@
       } else if (data.feedback_campo) {
         $('#loading').classList.remove('show');
         const campo = data.feedback_campo;
-        const stepMap = { aprender_evento: 10, investir: 14 };
+        const stepMap = { aprender_evento: 11, investir: 15 };
         const s = stepMap[campo];
         if (s) {
           goTo(s);
