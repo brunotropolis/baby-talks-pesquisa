@@ -404,6 +404,7 @@
       <div class="kpi"><div class="kpi-label">Cidades únicas</div><div class="kpi-value">${stats.cidades_top.length}${stats.cidades_top.length >= 10 ? '+' : ''}</div><div class="kpi-sub">${stats.cidades_top[0]?.nome || '—'} lidera</div></div>
       <div class="kpi"><div class="kpi-label">Trabalham</div><div class="kpi-value">${pct(stats.trabalho, 'Sim')}%</div><div class="kpi-sub">das respondentes</div></div>
       <div class="kpi"><div class="kpi-label">Cônjuge no evento</div><div class="kpi-value">${pct(stats.conjuge_evento, 'Sim')}%</div><div class="kpi-sub">querem que participe</div></div>
+      <div class="kpi"><div class="kpi-label">Querem gratuito</div><div class="kpi-value">${stats.recusa_pagar?.pct_recusa || 0}%</div><div class="kpi-sub">${stats.recusa_pagar?.total || 0} pessoas (fora do ticket)</div></div>
     `;
   }
 
@@ -433,7 +434,7 @@
     }).join('');
   }
 
-  function renderInsights(insights) {
+  function renderInsights(insights, stats) {
     const c = document.getElementById('insights');
     if (!insights || insights._erro) {
       c.innerHTML = `<div class="insight-card"><h3>Insights</h3><div style="color:#888;font-size:13px">${insights?._erro || 'Sem dados suficientes pra insights ainda.'}</div></div>`;
@@ -441,6 +442,7 @@
     }
     const ap = insights.aprender_evento || {};
     const inv = insights.investir || {};
+    const recusaTotal = stats?.recusa_pagar?.total || 0;
     c.innerHTML = `
       <div class="insight-card">
         <h3>🎓 P11 — O que querem aprender</h3>
@@ -459,6 +461,7 @@
       </div>
       <div class="insight-card">
         <h3>💰 P15 — Quanto investiriam</h3>
+        ${recusaTotal > 0 ? `<div style="font-size:11px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Cálculo ignora ${recusaTotal} resposta${recusaTotal > 1 ? 's' : ''} "gratuito/R$ 0"</div>` : ''}
         <div class="insight-resumo">${inv.resumo || '—'}</div>
         ${inv.faixa_predominante ? `
           <div class="faixa">
@@ -477,7 +480,7 @@
     const s = d.stats;
     document.getElementById('updatedAt').innerHTML = `<strong>Atualizado:</strong> ${d.gerado_em}`;
     renderKPIs(s);
-    renderInsights(d.insights);
+    renderInsights(d.insights, s);
     // Idade - faixas
     const faixasArr = Object.entries(s.idade.faixas).map(([nome, count]) => ({ nome, count }));
     bars('bar-idade', faixasArr);
@@ -517,7 +520,7 @@
           <span style="color:#666">${escapeHtml(a.cidade || '—')} · ${a.idade || '—'} anos · ${escapeHtml(a.fase || '—')}</span>
         </td>
         <td class="aprender">${escapeHtml(a.aprender_evento || '—')}</td>
-        <td class="investir">${escapeHtml(a.investir || '—')}</td>
+        <td class="investir">${escapeHtml(a.investir || '—')}${a.recusa_pagar ? ' <span style="color:#FFB74D;font-size:10px;background:rgba(255,183,77,.12);padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px;">fora do ticket</span>' : ''}</td>
       </tr>
     `).join('');
   }
