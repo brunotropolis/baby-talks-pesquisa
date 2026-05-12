@@ -262,6 +262,81 @@ curl https://n8n-n8n.xktssy.easypanel.host/webhook/pesquisa-dashboard?token=mrn-
 curl https://n8n-n8n.xktssy.easypanel.host/webhook/pesquisa-dashboard?public=1
 ```
 
+---
+
+## 📩 Envio de e-mail (link do curso)
+
+**Problema resolvido:** o token de acesso ficava só no `localStorage`. Se a pessoa fechasse a aba, limpasse cache ou trocasse de dispositivo, perdia acesso. Solução: enviar o link do curso por e-mail logo após cada resposta aprovada.
+
+### Resend.com
+- **Domínio:** `manualdorecemnascido.com.br` (Verified, com DKIM + SPF no Cloudflare)
+- **Remetente:** `Manual do Recém-Nascido <no-reply@manualdorecemnascido.com.br>`
+- **Sem caixa real** — replies dão bounce (aceitável)
+- **API Key (restricted, send-only):** `re_aLpFtVbp_JFvutW1GBvwtXvxTBvKJ7trq`
+- **Free tier:** 100/dia, 3000/mês
+- **Painel:** https://resend.com/domains
+
+### DNS no Cloudflare (já configurado)
+- `TXT resend._domainkey` — DKIM
+- `MX send` (prio 10) `feedback-smtp.sa-east-1.amazonses.com`
+- `TXT send` — SPF `v=spf1 include:amazonses.com ~all`
+- Região: `São Paulo (sa-east-1)`
+- ⚠️ MX do `@` (root) deixado de fora **propositalmente** pra não conflitar caso queira criar caixa real no Turbocloud depois.
+
+### Workflow n8n — Pesquisa | Despachar Email
+- **ID:** `SDZJC3dl4qtJihEy`
+- **Build script:** `D:/CLAUDE/baby-talks-workflows/build_dispatch_email.py`
+- **Trigger 1 — Cron:** a cada **10 minutos**
+- **Trigger 2 — Webhook manual:** `GET /webhook/pesquisa-despachar-email?token=mrn-dash-9k3xq2vnz8` (backfill on-demand)
+- **Limite:** 50 envios por execução (margem vs 100/dia do Resend)
+
+### Fluxo
+```
+CRON 10M + WEBHOOK MANUAL → MERGE → CHECK TOKEN → IF AUTORIZADO
+  ↓
+LER RESPOSTAS (Sheets) → FILTRAR PENDENTES (Code) → MONTAR EMAIL (Code, ForEach)
+  → ENVIAR RESEND (HTTP POST) → TRATAR RESPOSTA (Code, ForEach)
+  → MARCAR ENVIADO (Sheets update por row_number) → RESPONDER OK
+```
+
+### Filtro de pendentes
+- `status_analise === 'APROVADO'`
+- `email_enviado_em` vazio
+- `email` com formato válido (regex)
+
+### Colunas adicionadas na aba `Respostas`
+- `email_enviado_em` (AH) — timestamp BR quando envio deu sucesso
+- `email_erro` (AI) — mensagem do Resend se falhou (rate limit, validation, etc)
+
+### Template do e-mail (texto final aprovado pelo Bruno)
+- Assunto: `🎁 Seu acesso ao curso "O Dia do Parto"`
+- Header rosa (#C2185B) com "Manual do Recém-Nascido"
+- "Olá! Como você preencheu nossa pesquisa do evento, segue o curso **O Dia do Parto Completo** para que possa conferir."
+- Botão CTA `▶ Acessar o curso agora` → `https://parto.manualdorecemnascido.com.br/?t=TOKEN`
+- "Lembrando que ele ficará disponível até o dia **10 de julho de 2026** e depois sairá do ar."
+- "Aproveite bem cada aula. Preparamos esse conteúdo com muito carinho..."
+- Footer: "Esse link é pessoal e intransferível."
+- **Sem** "responda esse e-mail" (porque é no-reply de verdade)
+
+### Avisos no formulário (index.html)
+- **Caixa do agradecimento** (única, unificada): "🎁 Como agradecimento, quem responder de maneira válida ganha: Curso 'O Dia do Parto' — 11 aulas" + divisor + "📩 Vamos enviar o link do curso por e-mail também, então use um endereço válido para que possa receber o link com tranquilidade."
+- **Tela de redirect (loading pós-submit):** "Tudo certo! Redirecionando para o curso..." + "Já estamos liberando seu acesso 🎁 / 📩 Também enviamos o link por e-mail (pode demorar até 10 min)"
+- Tempo do redirect aumentado de 1.2s → 3.5s pra dar tempo da pessoa ler o aviso
+
+### Bugs corrigidos durante implementação
+1. **`$input.first()` em runOnceForEachItem** — erro "Can't use .first() here". Fix: usar `$json` ou `$input.item.json` em modo ForEach.
+2. **`return [{json}]` em runOnceForEachItem** — erro "An array was returned". Fix: retornar `{json}` (objeto único) nesse modo.
+3. **Colunas `email_enviado_em` / `email_erro` não existiam na planilha** — Sheets node retornava 0 items silenciosamente. Fix: criar via Sheets API `batchUpdate` (appendDimension + updateCells). Script: `D:/CLAUDE/baby-talks-workflows/add_email_cols.py`.
+4. **Matching por `id` falhava em ~75% das atualizações** — race condition / problema do batch update do n8n. Fix: usar `row_number` como matchingColumns (endereçamento direto da linha).
+5. **Backfill mandou 2-3 emails pras primeiras 20 aprovadas** — durante o debug, marcações não rodavam, então cada retrigger reenviava. Daqui pra frente é idempotente (1 email por pessoa).
+
+### Cuidados / próximos passos
+- **Sem opção de "marcar lido":** se a pessoa não receber, vai reclamar. Por isso o cron de 10min e o aviso na tela do redirect.
+- **Sem retry inteligente:** se Resend retornar 429 (rate limit), o item fica com `email_erro` preenchido e **não** tenta de novo até a próxima execução. Hoje isso volta a tentar porque o `email_enviado_em` continua vazio, então funciona como retry implícito.
+- **Sem dispatch fora do horário comercial:** o workflow não tem checagem de hora — roda 24/7 a cada 10min. Se quiser limitar, adicionar um IF de horário antes do LER RESPOSTAS (igual ao dispatcher do Buscador Geek v2).
+
+---
+
 ## 📌 Outras notas
 
 - `localStorage` keys usadas: `pesquisa_draft` (form rascunho), `curso_token` (área de aulas), `dashboard_admin_token` (dashboard admin)
