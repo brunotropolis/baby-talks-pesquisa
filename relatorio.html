@@ -523,7 +523,7 @@
     const s = d.stats;
     document.getElementById('updatedAt').innerHTML = `<strong>Atualizado:</strong> ${d.gerado_em}`;
     renderKPIs(s);
-    renderInsights(d.insights, s);
+    // insights carregados em background via loadInsights()
     renderInteresseCards(s, 'interesseCards');
     renderInteresseCards(s, 'interesseCards2');
 
@@ -668,9 +668,28 @@
       renderGeral(data);
       renderAbertas();
       document.getElementById('splash').classList.add('hide');
+      loadInsights();
     } catch(err) {
       console.error(err);
       showError('Erro de conexão. Tente recarregar.');
+    }
+  }
+
+  async function loadInsights() {
+    const url = API_URL.replace('/pesquisa-dashboard', '/pesquisa-dashboard-insights');
+    try {
+      const c = document.getElementById('insights');
+      if (c) {
+        c.innerHTML = '<div class="insight-card"><h3>💡 Gerando insights com IA…</h3><div style="color:#888;font-size:13px">Isso leva alguns segundos. Os números já estão acima.</div></div>';
+      }
+      const r = await fetch(`${url}?public=1&kind=${CURRENT_KIND}`);
+      const data = await r.json();
+      if (DATA) DATA.insights = data.insights;
+      renderInsights(data.insights, DATA?.stats || {});
+    } catch(e) {
+      console.error('insights err', e);
+      const c = document.getElementById('insights');
+      if (c) c.innerHTML = '<div class="insight-card"><h3>Insights</h3><div style="color:#888;font-size:13px">Não foi possível carregar os insights agora.</div></div>';
     }
   }
 
