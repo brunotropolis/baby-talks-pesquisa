@@ -217,6 +217,9 @@
 <div class="container">
   <div class="tabs">
     <button class="tab active" data-view="geral" onclick="showView('geral')">Visão Geral</button>
+    <button class="tab" data-view="demografia" onclick="showView('demografia')">Demografia</button>
+    <button class="tab" data-view="temas" onclick="showView('temas')">Temas de Interesse</button>
+    <button class="tab" data-view="evento" onclick="showView('evento')">Logística do Evento</button>
     <button class="tab" data-view="abertas" onclick="showView('abertas')">Respostas Abertas</button>
   </div>
 
@@ -225,7 +228,7 @@
     <div class="info-banner">
       <span class="icon">ℹ️</span>
       <div>
-        <strong>Médias inteligentes:</strong> em todos os cálculos numéricos (idade média, faixa de investimento etc) descartamos o maior e o menor valor antes de calcular — assim respostas extremas, de pessoas sem percepção de valor, não distorcem os números. Os contadores (top temas, opções selecionadas) consideram tudo normal.
+        <strong>Médias inteligentes:</strong> nos cálculos numéricos (idade média, faixa de investimento) descartamos o maior e o menor valor — respostas extremas de pessoas sem percepção de valor não distorcem os números. Os contadores e percentuais consideram todas as respostas normalmente.
       </div>
     </div>
     <div class="kpi-row" id="kpis"></div>
@@ -233,68 +236,92 @@
     <!-- Insights Claude -->
     <div class="grid-2" id="insights"></div>
 
-    <!-- Demografia -->
-    <div class="grid-2">
-      <div class="card">
-        <h3>Idade — Distribuição</h3>
-        <div id="bar-idade"></div>
-      </div>
-      <div class="card">
-        <h3>Fase</h3>
-        <div id="bar-fase"></div>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <h3>Filho</h3>
-        <div id="bar-filho"></div>
-      </div>
-      <div class="card">
-        <h3>Trimestre <span style="color:#666;font-weight:400;">(grávidas)</span></h3>
-        <div id="bar-trimestre"></div>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <h3>Top 10 cidades</h3>
-        <div id="bar-cidades"></div>
-      </div>
-      <div class="card">
-        <h3>Top 10 profissões</h3>
-        <div id="bar-profissoes"></div>
-      </div>
-    </div>
-
-    <!-- Interesse + temas -->
+    <!-- Interesse em blocos temáticos -->
     <div class="card" style="margin-bottom:16px">
       <h3>Interesse nos blocos temáticos</h3>
       <div class="interesse-cards" id="interesseCards"></div>
     </div>
+  </div>
 
-    <div class="grid-3">
+  <!-- DEMOGRAFIA -->
+  <div class="view" id="view-demografia">
+    <div class="grid-2">
       <div class="card">
-        <h3>Top 5 temas — Gestação</h3>
-        <div id="bar-gestacao-temas"></div>
+        <h3>Idade — Faixas</h3>
+        <div id="bar-idade"></div>
       </div>
       <div class="card">
-        <h3>Top 5 temas — Parto</h3>
-        <div id="bar-parto-temas"></div>
-      </div>
-      <div class="card">
-        <h3>Top 5 temas — Primeiros meses</h3>
-        <div id="bar-bebe-temas"></div>
+        <h3>Em qual fase está?</h3>
+        <div id="bar-fase"></div>
       </div>
     </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Trimestre <span style="color:#666;font-weight:400;">(só grávidas)</span></h3>
+        <div id="bar-trimestre"></div>
+      </div>
+      <div class="card">
+        <h3>Esse é seu...</h3>
+        <div id="bar-filho"></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Está trabalhando?</h3>
+        <div id="bar-trabalho"></div>
+      </div>
+      <div class="card">
+        <h3>Cônjuge participar do evento?</h3>
+        <div id="bar-conjuge"></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Cidades</h3>
+        <div id="bar-cidades"></div>
+      </div>
+      <div class="card">
+        <h3>Profissões</h3>
+        <div id="bar-profissoes"></div>
+      </div>
+    </div>
+  </div>
 
-    <!-- Logística do evento -->
+  <!-- TEMAS DE INTERESSE -->
+  <div class="view" id="view-temas">
     <div class="card" style="margin-bottom:16px">
-      <h3>Top 5 — O que esperam ter no evento</h3>
-      <div id="bar-extras"></div>
+      <h3>Interesse por bloco temático</h3>
+      <div class="interesse-cards" id="interesseCards2"></div>
     </div>
 
-    <div class="grid-3">
+    <div class="card">
+      <h3 style="color:#F8BBD0">🤰 Gestação — temas mais citados</h3>
+      <div style="font-size:12px;color:#888;margin-bottom:12px">% baseado no total de respondentes</div>
+      <div id="bar-gestacao-all"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="color:#F8BBD0">👶 Parto — temas mais citados</h3>
+      <div style="font-size:12px;color:#888;margin-bottom:12px">% baseado no total de respondentes</div>
+      <div id="bar-parto-all"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3 style="color:#F8BBD0">🍼 Primeiros meses do bebê — temas mais citados</h3>
+      <div style="font-size:12px;color:#888;margin-bottom:12px">% baseado no total de respondentes</div>
+      <div id="bar-bebe-all"></div>
+    </div>
+  </div>
+
+  <!-- LOGÍSTICA DO EVENTO -->
+  <div class="view" id="view-evento">
+    <div class="card">
+      <h3>O que esperam ter no evento</h3>
+      <div style="font-size:12px;color:#888;margin-bottom:12px">% baseado no total de respondentes</div>
+      <div id="bar-extras-all"></div>
+    </div>
+
+    <div class="grid-3" style="margin-top:16px">
       <div class="card">
         <h3>Tempo ideal</h3>
         <div id="bar-tempo"></div>
@@ -305,7 +332,7 @@
       </div>
       <div class="card">
         <h3>Cônjuge participar?</h3>
-        <div id="bar-conjuge"></div>
+        <div id="bar-conjuge2"></div>
       </div>
     </div>
   </div>
@@ -396,8 +423,9 @@
     return Math.round(v.count / total * 100);
   }
 
-  function renderInteresseCards(stats) {
-    const c = document.getElementById('interesseCards');
+  function renderInteresseCards(stats, containerId = 'interesseCards') {
+    const c = document.getElementById(containerId);
+    if (!c) return;
     const items = [
       { titulo: '🤰 Gestação', arr: stats.gestacao_interesse },
       { titulo: '👶 Parto', arr: stats.parto_interesse },
@@ -462,22 +490,31 @@
     document.getElementById('updatedAt').innerHTML = `<strong>Atualizado:</strong> ${d.gerado_em}`;
     renderKPIs(s);
     renderInsights(d.insights, s);
-    // Idade - faixas
+    renderInteresseCards(s, 'interesseCards');
+    renderInteresseCards(s, 'interesseCards2');
+
+    // Demografia
     const faixasArr = Object.entries(s.idade.faixas).map(([nome, count]) => ({ nome, count }));
     bars('bar-idade', faixasArr);
     bars('bar-fase', s.fase);
     bars('bar-filho', s.filho);
     bars('bar-trimestre', s.trimestre);
+    bars('bar-trabalho', s.trabalho);
     bars('bar-cidades', s.cidades_top);
     bars('bar-profissoes', s.profissoes_top);
-    renderInteresseCards(s);
-    bars('bar-gestacao-temas', s.gestacao_temas_top);
-    bars('bar-parto-temas', s.parto_temas_top);
-    bars('bar-bebe-temas', s.bebe_temas_top);
-    bars('bar-extras', s.evento_extras_top);
+
+    // Temas — versão "_all" com % sobre TOTAL de respondentes
+    const totalResp = s.total;
+    bars('bar-gestacao-all', s.gestacao_temas_all || s.gestacao_temas_top, { totalGroup: totalResp });
+    bars('bar-parto-all', s.parto_temas_all || s.parto_temas_top, { totalGroup: totalResp });
+    bars('bar-bebe-all', s.bebe_temas_all || s.bebe_temas_top, { totalGroup: totalResp });
+
+    // Logística
+    bars('bar-extras-all', s.evento_extras_all || s.evento_extras_top, { totalGroup: totalResp });
     bars('bar-tempo', s.tempo_ideal);
     bars('bar-periodo', s.periodo);
     bars('bar-conjuge', s.conjuge_evento);
+    bars('bar-conjuge2', s.conjuge_evento);
   }
 
   function renderAbertas() {
