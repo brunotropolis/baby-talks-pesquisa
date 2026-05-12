@@ -219,9 +219,10 @@
 </div>
 
 <div class="container">
-  <div class="kind-selector" style="display:flex;gap:8px;margin-bottom:16px;background:#1A1A1A;padding:6px;border-radius:12px;width:fit-content;">
-    <button class="kind-btn active" data-kind="parto" onclick="setKind('parto')" style="background:#E91E63;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;">🤰 Pesquisa Parto</button>
-    <button class="kind-btn" data-kind="enxoval" onclick="setKind('enxoval')" style="background:transparent;color:#aaa;border:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;">📦 Pesquisa Enxoval</button>
+  <div class="kind-selector" style="display:flex;gap:8px;margin-bottom:16px;background:#1A1A1A;padding:6px;border-radius:12px;width:fit-content;flex-wrap:wrap;">
+    <button class="kind-btn active" data-kind="geral" onclick="setKind('geral')" style="background:#E91E63;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;">📊 Geral</button>
+    <button class="kind-btn" data-kind="parto" onclick="setKind('parto')" style="background:transparent;color:#aaa;border:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;">🤰 Parto</button>
+    <button class="kind-btn" data-kind="enxoval" onclick="setKind('enxoval')" style="background:transparent;color:#aaa;border:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;">📦 Enxoval</button>
   </div>
   <div class="tabs">
     <button class="tab active" data-view="geral" onclick="showView('geral')">Visão Geral</button>
@@ -381,7 +382,7 @@
   const API_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/pesquisa-dashboard';
   const KIND_KEY = 'relatorio_kind';
   let DATA = null;
-  let CURRENT_KIND = 'parto';
+  let CURRENT_KIND = 'geral';
   let abertasPagina = 1;
   let cidadesPagina = 1;
   const PAGE_SIZE = 30;
@@ -676,7 +677,7 @@
   function init() {
     try {
       const k = localStorage.getItem(KIND_KEY);
-      if (k === 'enxoval' || k === 'parto') CURRENT_KIND = k;
+      if (k === 'enxoval' || k === 'parto' || k === 'geral') CURRENT_KIND = k;
     } catch(e) {}
     document.querySelectorAll('.kind-btn').forEach(b => {
       const isActive = b.dataset.kind === CURRENT_KIND;
