@@ -378,6 +378,9 @@
         <div class="warning-box">
           ⚠️ <strong>Atenção:</strong> usamos uma ferramenta de análise que avalia cada resposta. <strong>Respostas inválidas não receberão o curso</strong> — responda com atenção e sinceridade.
         </div>
+        <div class="info-box" style="background:#FFF0F5;border:1px solid #F8BBD0;border-radius:12px;padding:14px 16px;margin:14px 0;font-size:14px;color:#880E4F;line-height:1.5;">
+          📩 <strong>Vamos enviar o link do curso por e-mail também</strong> — então use um endereço que você acessa de verdade, pra não perder seu acesso.
+        </div>
         <p style="font-size:13px;color:#888;margin-bottom:0;">São 15 perguntas. Leva uns 5 minutos.</p>
       </div>
       <div class="nav">
@@ -951,10 +954,10 @@
       });
       const data = await r.json().catch(() => ({}));
       if (data.aprovado && data.url_acesso) {
-        $('#loadingText').textContent = 'Tudo certo! Redirecionando...';
-        $('#loadingSub').textContent = 'Liberando seu acesso ao curso 🎁';
+        $('#loadingText').textContent = 'Tudo certo! Redirecionando para o curso...';
+        $('#loadingSub').innerHTML = 'Já estamos liberando seu acesso 🎁<br><span style="font-size:13px;opacity:.85;">📩 Também enviamos o link por e-mail (pode demorar até 10 min)</span>';
         try { localStorage.removeItem(DRAFT_KEY); } catch(e) {}
-        setTimeout(() => { window.location.href = data.url_acesso; }, 1200);
+        setTimeout(() => { window.location.href = data.url_acesso; }, 3500);
       } else if (data.feedback_campo) {
         $('#loading').classList.remove('show');
         const campo = data.feedback_campo;
