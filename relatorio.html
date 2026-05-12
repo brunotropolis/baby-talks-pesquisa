@@ -637,7 +637,8 @@
       pag = document.createElement('div');
       pag.id = 'abertas-paginacao';
       pag.style.cssText = 'margin-top:16px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;';
-      tbody.closest('.card').appendChild(pag);
+      const parent = tbody.closest('.view') || tbody.closest('.table-wrap') || tbody.parentElement;
+      if (parent) parent.appendChild(pag);
     }
     pag.innerHTML = `<div style="width:100%;text-align:center;color:#888;font-size:12px;margin-bottom:8px">
       Mostrando ${inicio + 1}-${Math.min(inicio + PAGE_SIZE, items.length)} de ${items.length} respostas
