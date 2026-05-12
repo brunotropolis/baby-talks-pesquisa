@@ -219,6 +219,10 @@
 </div>
 
 <div class="container">
+  <div class="kind-selector" style="display:flex;gap:8px;margin-bottom:16px;background:#1A1A1A;padding:6px;border-radius:12px;width:fit-content;">
+    <button class="kind-btn active" data-kind="parto" onclick="setKind('parto')" style="background:#E91E63;color:#fff;border:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;">🤰 Pesquisa Parto</button>
+    <button class="kind-btn" data-kind="enxoval" onclick="setKind('enxoval')" style="background:transparent;color:#aaa;border:none;padding:10px 20px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;transition:all .2s;">📦 Pesquisa Enxoval</button>
+  </div>
   <div class="tabs">
     <button class="tab active" data-view="geral" onclick="showView('geral')">Visão Geral</button>
     <button class="tab" data-view="demografia" onclick="showView('demografia')">Demografia</button>
@@ -279,15 +283,20 @@
         <div id="bar-conjuge"></div>
       </div>
     </div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Top 10 cidades</h3>
-        <div id="bar-cidades"></div>
-      </div>
-      <div class="card">
-        <h3>Top 10 profissões</h3>
-        <div id="bar-profissoes"></div>
-      </div>
+    <div class="card">
+      <h3>Top 10 profissões</h3>
+      <div id="bar-profissoes"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Top 10 cidades</h3>
+      <div id="bar-cidades"></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>Todas as cidades <span style="color:#666;font-weight:400;font-size:12px;" id="cidades-total"></span></h3>
+      <div id="cidades-lista" style="max-height:480px;overflow-y:auto;"></div>
+      <div id="cidades-paginacao" style="margin-top:12px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;"></div>
     </div>
   </div>
 
@@ -365,7 +374,28 @@
 <script>
   const API_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/pesquisa-dashboard';
   const TOKEN_KEY = 'dashboard_admin_token';
+  const KIND_KEY = 'dashboard_kind';
   let DATA = null;
+  let CURRENT_KIND = 'parto';
+  let abertasPagina = 1;
+  let cidadesPagina = 1;
+  const PAGE_SIZE = 30;
+  const CIDADES_POR_PAGINA = 30;
+
+  function setKind(kind) {
+    if (kind === CURRENT_KIND) return;
+    CURRENT_KIND = kind;
+    try { localStorage.setItem(KIND_KEY, kind); } catch(e) {}
+    document.querySelectorAll('.kind-btn').forEach(b => {
+      const isActive = b.dataset.kind === kind;
+      b.classList.toggle('active', isActive);
+      b.style.background = isActive ? '#E91E63' : 'transparent';
+      b.style.color = isActive ? '#fff' : '#aaa';
+    });
+    abertasPagina = 1;
+    cidadesPagina = 1;
+    loadData();
+  }
 
   function getToken() {
     const params = new URLSearchParams(window.location.search);
@@ -432,7 +462,6 @@
     c.innerHTML = `
       <div class="kpi"><div class="kpi-label">Respondentes</div><div class="kpi-value">${stats.total}</div><div class="kpi-sub">aprovados</div></div>
       <div class="kpi"><div class="kpi-label">Idade média</div><div class="kpi-value">${stats.idade.media}</div><div class="kpi-sub">${stats.idade.min}–${stats.idade.max} anos</div></div>
-      <div class="kpi"><div class="kpi-label">Cidades únicas</div><div class="kpi-value">${stats.cidades_top.length}${stats.cidades_top.length >= 10 ? '+' : ''}</div><div class="kpi-sub">${stats.cidades_top[0]?.nome || '—'} lidera</div></div>
       <div class="kpi"><div class="kpi-label">Trabalham</div><div class="kpi-value">${pct(stats.trabalho, 'Sim')}%</div><div class="kpi-sub">das respondentes</div></div>
       <div class="kpi"><div class="kpi-label">Cônjuge no evento</div><div class="kpi-value">${pct(stats.conjuge_evento, 'Sim')}%</div><div class="kpi-sub">querem que participe</div></div>
       <div class="kpi"><div class="kpi-label">Querem gratuito</div><div class="kpi-value">${stats.recusa_pagar?.pct_recusa || 0}%</div><div class="kpi-sub">${stats.recusa_pagar?.total || 0} pessoas (fora do ticket)</div></div>
@@ -525,6 +554,7 @@
     bars('bar-trabalho', s.trabalho);
     bars('bar-cidades', s.cidades_top);
     bars('bar-profissoes', s.profissoes_top);
+    renderCidadesLista(s.cidades_full || s.cidades_top);
 
     // Temas — usar versão "_all" e calcular % sobre TOTAL de respondentes
     const totalResp = s.total;
@@ -540,6 +570,57 @@
     bars('bar-conjuge2', s.conjuge_evento);
   }
 
+  function renderCidadesLista(cidades) {
+    const lista = document.getElementById('cidades-lista');
+    const pag = document.getElementById('cidades-paginacao');
+    const totalSpan = document.getElementById('cidades-total');
+    if (!lista || !cidades) return;
+    const total = cidades.length;
+    totalSpan.textContent = total ? `(${total} ${total === 1 ? 'cidade' : 'cidades'} no total)` : '';
+    if (!total) {
+      lista.innerHTML = '<div style="color:#666;font-size:13px;padding:10px 0">Sem dados ainda</div>';
+      pag.innerHTML = '';
+      return;
+    }
+    const totalPaginas = Math.ceil(total / CIDADES_POR_PAGINA);
+    if (cidadesPagina > totalPaginas) cidadesPagina = 1;
+    const inicio = (cidadesPagina - 1) * CIDADES_POR_PAGINA;
+    const slice = cidades.slice(inicio, inicio + CIDADES_POR_PAGINA);
+    lista.innerHTML = slice.map(c => `
+      <div style="display:flex;justify-content:space-between;padding:8px 4px;border-bottom:1px solid #1A1A1A;font-size:13px">
+        <span style="color:#E8E8E8">${escapeHtml(c.nome || '—')}</span>
+        <span style="color:#888;font-weight:500">${c.count}</span>
+      </div>
+    `).join('');
+    pag.innerHTML = renderPaginacao(cidadesPagina, totalPaginas, n => { cidadesPagina = n; renderCidadesLista(cidades); });
+  }
+
+  function renderPaginacao(atual, total, onClick) {
+    if (total <= 1) return '';
+    const btn = (n, label, active, disabled) => `
+      <button data-pg="${n}" ${disabled ? 'disabled' : ''}
+        style="background:${active ? '#E91E63' : 'transparent'};color:${active ? '#fff' : '#aaa'};
+        border:1px solid #333;padding:6px 12px;border-radius:6px;cursor:${disabled ? 'not-allowed' : 'pointer'};
+        opacity:${disabled ? '.4' : '1'};font-size:13px;">${label}</button>`;
+    let html = btn(Math.max(1, atual - 1), '←', false, atual === 1);
+    const pages = [];
+    for (let i = 1; i <= total; i++) {
+      if (i === 1 || i === total || (i >= atual - 2 && i <= atual + 2)) pages.push(i);
+      else if (pages[pages.length - 1] !== '...') pages.push('...');
+    }
+    pages.forEach(p => {
+      if (p === '...') html += `<span style="color:#666;padding:6px 4px">…</span>`;
+      else html += btn(p, p, p === atual);
+    });
+    html += btn(Math.min(total, atual + 1), '→', false, atual === total);
+    setTimeout(() => {
+      document.querySelectorAll('[data-pg]').forEach(b => {
+        b.onclick = () => onClick(+b.dataset.pg);
+      });
+    }, 0);
+    return html;
+  }
+
   function renderAbertas() {
     if (!DATA) return;
     const filter = (document.getElementById('filter').value || '').toLowerCase().trim();
@@ -551,9 +632,15 @@
     const tbody = document.getElementById('abertasTbody');
     if (!items.length) {
       tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#666;padding:40px">Nenhuma resposta encontrada.</td></tr>';
+      const pag = document.getElementById('abertas-paginacao');
+      if (pag) pag.innerHTML = '';
       return;
     }
-    tbody.innerHTML = items.map(a => `
+    const totalPaginas = Math.ceil(items.length / PAGE_SIZE);
+    if (abertasPagina > totalPaginas) abertasPagina = 1;
+    const inicio = (abertasPagina - 1) * PAGE_SIZE;
+    const slice = items.slice(inicio, inicio + PAGE_SIZE);
+    tbody.innerHTML = slice.map(a => `
       <tr>
         <td class="meta col-data">${(a.criado_em || '').substring(0, 10)}<br><span style="color:#555;font-size:11px">${(a.criado_em || '').substring(11, 16)}</span></td>
         <td class="meta col-quem">
@@ -564,17 +651,28 @@
         <td class="investir col-investir">${escapeHtml(a.investir || '—')}${a.recusa_pagar ? '<div style="margin-top:6px"><span style="color:#FFB74D;font-size:10px;background:rgba(255,183,77,.12);padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">fora do ticket</span></div>' : ''}</td>
       </tr>
     `).join('');
+    let pag = document.getElementById('abertas-paginacao');
+    if (!pag) {
+      pag = document.createElement('div');
+      pag.id = 'abertas-paginacao';
+      pag.style.cssText = 'margin-top:16px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;';
+      tbody.closest('.card').appendChild(pag);
+    }
+    pag.innerHTML = `<div style="width:100%;text-align:center;color:#888;font-size:12px;margin-bottom:8px">
+      Mostrando ${inicio + 1}-${Math.min(inicio + PAGE_SIZE, items.length)} de ${items.length} respostas
+    </div>` + renderPaginacao(abertasPagina, totalPaginas, n => { abertasPagina = n; renderAbertas(); });
   }
 
   function escapeHtml(s) {
     return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  async function init() {
+  async function loadData() {
     const token = getToken();
     if (!token) { showAuthScreen(); return; }
+    document.getElementById('splash').classList.remove('hide');
     try {
-      const r = await fetch(`${API_URL}?token=${encodeURIComponent(token)}`);
+      const r = await fetch(`${API_URL}?token=${encodeURIComponent(token)}&kind=${CURRENT_KIND}`);
       if (r.status === 401) {
         try { localStorage.removeItem(TOKEN_KEY); } catch(e) {}
         showAuthScreen('Token inválido.'); return;
@@ -597,6 +695,20 @@
       console.error(err);
       showAuthScreen('Erro de conexão. Tente recarregar.');
     }
+  }
+
+  function init() {
+    try {
+      const k = localStorage.getItem(KIND_KEY);
+      if (k === 'enxoval' || k === 'parto') CURRENT_KIND = k;
+    } catch(e) {}
+    document.querySelectorAll('.kind-btn').forEach(b => {
+      const isActive = b.dataset.kind === CURRENT_KIND;
+      b.classList.toggle('active', isActive);
+      b.style.background = isActive ? '#E91E63' : 'transparent';
+      b.style.color = isActive ? '#fff' : '#aaa';
+    });
+    loadData();
   }
 
   init();
