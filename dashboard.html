@@ -373,7 +373,7 @@
 
 <script>
   const API_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/pesquisa-dashboard';
-  const TOKEN_KEY = 'dashboard_admin_token';
+  const ADMIN_TOKEN = 'mrn-dash-9k3xq2vnz8';
   const KIND_KEY = 'dashboard_kind';
   let DATA = null;
   let CURRENT_KIND = 'parto';
@@ -398,15 +398,7 @@
   }
 
   function getToken() {
-    const params = new URLSearchParams(window.location.search);
-    const fromUrl = params.get('t') || params.get('token') || '';
-    if (fromUrl) {
-      try { localStorage.setItem(TOKEN_KEY, fromUrl); } catch(e) {}
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, '', cleanUrl);
-      return fromUrl;
-    }
-    try { return localStorage.getItem(TOKEN_KEY) || ''; } catch(e) { return ''; }
+    return ADMIN_TOKEN;
   }
 
   function showView(name) {
@@ -669,14 +661,9 @@
 
   async function loadData() {
     const token = getToken();
-    if (!token) { showAuthScreen(); return; }
     document.getElementById('splash').classList.remove('hide');
     try {
       const r = await fetch(`${API_URL}?token=${encodeURIComponent(token)}&kind=${CURRENT_KIND}`);
-      if (r.status === 401) {
-        try { localStorage.removeItem(TOKEN_KEY); } catch(e) {}
-        showAuthScreen('Token inválido.'); return;
-      }
       const data = await r.json();
       DATA = data;
       if (!data.stats || data.stats.total === 0) {
@@ -693,7 +680,7 @@
       document.getElementById('splash').classList.add('hide');
     } catch(err) {
       console.error(err);
-      showAuthScreen('Erro de conexão. Tente recarregar.');
+      document.getElementById('splash').innerHTML = '<div style="text-align:center;color:#aaa;padding:40px;"><h2>Erro de conexão</h2><p>Tente recarregar a página.</p></div>';
     }
   }
 
