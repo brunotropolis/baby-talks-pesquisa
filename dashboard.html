@@ -139,19 +139,23 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
+    table-layout: fixed;
   }
   th, td {
-    padding: 12px 10px;
+    padding: 14px 14px;
     text-align: left;
     border-bottom: 1px solid #2a1a25;
     vertical-align: top;
   }
   th { color: #888; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; background: #14141a; }
   tr:hover td { background: #1a1a1f; }
-  td.meta { color: #888; white-space: nowrap; font-size: 12px; }
-  td.aprender, td.investir { color: #E8E8E8; line-height: 1.5; }
-  td.investir { font-weight: 600; color: #F8BBD0; white-space: nowrap; }
-  .table-wrap { overflow-x: auto; background: #14141a; border-radius: 14px; }
+  th.col-data, td.col-data { width: 100px; }
+  th.col-quem, td.col-quem { width: 220px; }
+  th.col-investir, td.col-investir { width: 140px; }
+  td.meta { color: #888; font-size: 12px; word-break: break-word; }
+  td.aprender { color: #E8E8E8; line-height: 1.6; word-wrap: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
+  td.investir { color: #F8BBD0; font-weight: 600; line-height: 1.6; word-wrap: break-word; overflow-wrap: anywhere; }
+  .table-wrap { background: #14141a; border-radius: 14px; }
   .empty { text-align: center; padding: 80px 20px; color: #666; }
   .empty h2 { color: #aaa; margin-bottom: 8px; font-size: 18px; }
   .splash {
@@ -346,10 +350,10 @@
       <table id="tabela-abertas">
         <thead>
           <tr>
-            <th>Data</th>
-            <th>Quem</th>
+            <th class="col-data">Data</th>
+            <th class="col-quem">Quem</th>
             <th>O que gostaria de aprender</th>
-            <th>Investir</th>
+            <th class="col-investir">Investir</th>
           </tr>
         </thead>
         <tbody id="abertasTbody"></tbody>
@@ -551,13 +555,13 @@
     }
     tbody.innerHTML = items.map(a => `
       <tr>
-        <td class="meta">${(a.criado_em || '').substring(0, 16)}</td>
-        <td class="meta">
-          ${escapeHtml(a.email || '—')}<br>
-          <span style="color:#666">${escapeHtml(a.cidade || '—')} · ${a.idade || '—'} anos · ${escapeHtml(a.fase || '—')}</span>
+        <td class="meta col-data">${(a.criado_em || '').substring(0, 10)}<br><span style="color:#555;font-size:11px">${(a.criado_em || '').substring(11, 16)}</span></td>
+        <td class="meta col-quem">
+          <div style="color:#E8E8E8;font-weight:500">${escapeHtml(a.email || '—')}</div>
+          <div style="color:#666;font-size:11px;margin-top:3px">${escapeHtml(a.cidade || '—')}<br>${a.idade || '—'} anos · ${escapeHtml(a.fase || '—')}</div>
         </td>
         <td class="aprender">${escapeHtml(a.aprender_evento || '—')}</td>
-        <td class="investir">${escapeHtml(a.investir || '—')}${a.recusa_pagar ? ' <span style="color:#FFB74D;font-size:10px;background:rgba(255,183,77,.12);padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px;">fora do ticket</span>' : ''}</td>
+        <td class="investir col-investir">${escapeHtml(a.investir || '—')}${a.recusa_pagar ? '<div style="margin-top:6px"><span style="color:#FFB74D;font-size:10px;background:rgba(255,183,77,.12);padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">fora do ticket</span></div>' : ''}</td>
       </tr>
     `).join('');
   }
