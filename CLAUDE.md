@@ -337,6 +337,108 @@ LER RESPOSTAS (Sheets) → FILTRAR PENDENTES (Code) → MONTAR EMAIL (Code, ForE
 
 ---
 
+## 📦 Pesquisa Enxoval — Spin-off (Mai/2026)
+
+Versão paralela da pesquisa onde o prêmio é o **e-book Enxoval Descomplicado** (em vez do curso). Toda a infraestrutura é **duplicada**, sem tocar no parto.
+
+### URLs
+- **Site:** https://enxoval.manualdorecemnascido.com.br (custom domain) — fallback `https://brunotropolis.github.io/baby-talks-enxoval/`
+- **Repo:** https://github.com/brunotropolis/baby-talks-enxoval
+- **E-book (Drive público):** `https://drive.google.com/file/d/1SBp-sfjEj7UfY_P2LRzbcBVOX_MHg_ZE/view?usp=sharing`
+- **Pasta local:** `D:\CLAUDE\baby-talks-enxoval-site\`
+
+### DNS Cloudflare
+- CNAME `enxoval` → `brunotropolis.github.io` (proxy desligado, TTL auto)
+- Configurado via Cloudflare API com sessão JS da dashboard (X-Cross-Site-Security: dash header)
+- GitHub Pages: CNAME file + `PUT /repos/.../pages` com `cname: enxoval.manualdorecemnascido.com.br`
+
+### Planilha
+- **ID:** `139IQfUDCE4ZzyROiZ9FdBsf3e33Y3oKiY4yMZpjVLa4`
+- **Nome:** Pesquisa Enxoval — Manual do Recém-Nascido
+- **Aba única:** `Respostas` (mesmas 34 colunas do parto, incluindo `email_enviado_em` e `email_erro`)
+- Criada via script `D:/CLAUDE/baby-talks-workflows/create_enxoval_sheet.py` (cria spreadsheet + escreve headers em 1 chamada Sheets API)
+
+### Workflows n8n
+| ID | Nome | Webhook | Função |
+|---|---|---|---|
+| `fA9Xk98SjmHLJjrj` | Enxoval \| Receber | `POST /webhook/baby-talks-enxoval` | Recebe form, analisa via Claude, gera token, salva na planilha. Retorna `url_acesso: <PDF do Drive>` |
+| `eHOt44jYbwPgErIP` | Enxoval \| Despachar Email | Cron `5,15,25,35,45,55 * * * *` + `GET /webhook/enxoval-despachar-email?token=...` | Envia e-mail com botão "📥 Baixar o e-book" pro PDF do Drive |
+
+**Build scripts:**
+- `build_pesquisa_enxoval.py` — workflow do form (cópia adaptada do parto, sem `APPEND ACESSOS`, `URL_ACESSO_BASE` aponta pro PDF do Drive direto)
+- `build_dispatch_email_enxoval.py` — dispatcher de e-mail (template diferente, assunto "🎁 Seu e-book Enxoval Descomplicado")
+- `setup_github_enxoval.py` — cria repo GitHub + ativa Pages
+- `clean_enxoval_sheet.py` — limpa a base de testes (zera `A2:AZ1000`, mantém headers) — útil pra resetar antes de divulgar
+
+### Diferenças vs Parto
+| | Parto | Enxoval |
+|---|---|---|
+| Prêmio | Curso "O Dia do Parto" (11 aulas, área protegida) | E-book PDF (Drive público) |
+| URL de acesso | `parto.manualdorecemnascido.com.br/?t=TOKEN` | URL direta do Drive |
+| Validação de token | Sim (API Acessos) | Não (PDF é público) |
+| Aba `Acessos` | Sim | Não tem |
+| Pasta-mãe | `baby-talks-pesquisa` | `baby-talks-enxoval-site` |
+| Subdomain | `pesquisa.manualdorecemnascido.com.br` | `enxoval.manualdorecemnascido.com.br` |
+| Cron e-mail | `*/10 * * * *` ofset :28 | `5,15,25,35,45,55 * * * *` (desencavalado pra evitar rate limit do Sheets) |
+
+### Tela de sucesso (pós-form)
+- Substitui o overlay de loading por **fundo gradiente rosa** (#E91E63 → #C2185B)
+- Botão branco grande "📥 Acessar o e-book" (clique manual do usuário → não é bloqueado por popup blocker)
+- Aviso "📩 Também enviamos o link no seu e-mail"
+
+### E-mail
+- Mesma infra Resend (`re_aLpFtVbp_JFvutW1GBvwtXvxTBvKJ7trq`), mesmo domínio `no-reply@manualdorecemnascido.com.br`
+- Assunto: `🎁 Seu e-book Enxoval Descomplicado`
+- Template: header rosa "Manual do Recém-Nascido", botão "📥 Baixar o e-book agora", fallback de URL no footer (caso o botão não funcione)
+
+---
+
+## 📊 Dashboard Unificado (Mai/2026)
+
+Dashboards admin e público agora suportam **3 visões** das duas pesquisas.
+
+### URLs
+- **Admin (sem login):** https://pesquisa.manualdorecemnascido.com.br/dashboard.html
+- **Público (compartilhar):** https://pesquisa.manualdorecemnascido.com.br/relatorio.html
+
+### Seletor de visão
+3 botões no topo da página (persistem em `localStorage`):
+- **📊 Geral** (default) — soma de Parto + Enxoval, todas as respostas aprovadas
+- **🤰 Parto** — só a planilha do parto
+- **📦 Enxoval** — só a planilha do enxoval
+
+### Backend (`build_dashboard.py` → `p3DWEIv3IO44f5vo`)
+- Read paralelo das 2 planilhas (`READ PARTO` + `READ ENXOVAL`)
+- Cada item recebe tag `_kind = parto|enxoval` via Code node
+- `MERGE RESPOSTAS` (mode `append`, 2 inputs) junta tudo
+- `AGREGAR` filtra por `query.kind`: `parto` → só `_kind=parto`, `enxoval` → só `_kind=enxoval`, `geral` → tudo
+- Default kind = `parto` no backend, `geral` no frontend
+
+### Mudanças adicionais nos dashboards
+- ❌ KPI "Cidades únicas" removido da visão geral (poluía o painel)
+- 📍 Top 10 cidades **movido pra baixo** (após profissões) na aba Demografia
+- 📋 **Lista completa de cidades** abaixo do Top 10, com **paginação 30/página** + scroll
+- 📄 **Paginação 30/página nas Respostas Abertas** ("Mostrando X-Y de Z" + botões anterior/próximo, com `...` em meio quando há muitas páginas)
+- 🔓 **Auth removido do dashboard.html** — token é hardcoded em `ADMIN_TOKEN` na JS, não tem mais tela de prompt
+- `cidades_full` (lista completa) adicionado ao response do backend, além de `cidades_top`
+
+### Bug do dashboard corrigido
+`tbody.closest('.card')` retornava `null` porque a tabela de Respostas Abertas está em `.table-wrap`, não em `.card`. Fix: `parent = tbody.closest('.view') || tbody.closest('.table-wrap') || tbody.parentElement`.
+
+---
+
+## ⏰ Rate limit Google Sheets API — coordenação de crons
+
+**Sintoma observado:** o cron do enxoval falhava sistematicamente com `Quota exceeded — Read requests per minute per user`. Já o cron do parto rodava 100% OK.
+
+**Causa raiz:** ambos workflows tinham `*/10 * * * *` mas com offsets de execução diferentes (parto :28, enxoval :46). Em alguns crons isso convergia perto demais e estourava a cota momentânea.
+
+**Fix:** mudar cron do enxoval pra `cronExpression: "5,15,25,35,45,55 * * * *"` (roda em :05, :15, :25...). Agora os 2 dispatchers ficam sempre ~7-13min de distância em cada rodada → sem mais conflito.
+
+**Sistema resiliente mesmo em falha:** se um cron falhar, o `email_enviado_em` continua vazio e o próximo run pega tudo. Pode ter delay momentâneo, mas não perde envios.
+
+---
+
 ## 📌 Outras notas
 
 - `localStorage` keys usadas: `pesquisa_draft` (form rascunho), `curso_token` (área de aulas), `dashboard_admin_token` (dashboard admin)
