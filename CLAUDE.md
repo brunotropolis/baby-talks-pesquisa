@@ -439,6 +439,93 @@ Dashboards admin e público agora suportam **3 visões** das duas pesquisas.
 
 ---
 
+## 🔑 Login por e-mail no curso (Mai/2026)
+
+**Problema:** o token de acesso (`?t=TOKEN`) ficava só no localStorage. Quem fechava aba, limpava cache ou trocava de dispositivo perdia acesso. Caso reportado pela Day e por Karina.
+
+**Solução:** validar acesso por **e-mail** em vez de token. O e-mail é estável, a pessoa não esquece, funciona em qualquer device.
+
+### Como funciona
+- Quem chega via link do email novo: URL `?email=USUARIO@...` → loga automático
+- Quem chega "do nada" em `parto.manualdorecemnascido.com.br`: vê tela de login pedindo o e-mail
+- Backend valida se o e-mail existe em `Respostas` com `status_analise=APROVADO`
+- Email validado fica salvo em `localStorage.curso_email` — não precisa digitar de novo
+- **Links antigos com `?t=TOKEN` continuam funcionando** (rota legado mantida)
+
+### Backend — `build_validar.py` (workflow `mDNt6CEiY0EqIUX6`)
+Aceita 2 tipos de credencial:
+- `?t=TOKEN` — busca em `Acessos`
+- `?email=EMAIL` — busca em `Respostas` com `status_analise=APROVADO`. Se acesso correspondente não existir, usa expiração padrão `2026-07-10`.
+
+### Frontend — `baby-talks-aulas/index.html`
+- Função `getAuthParams()`: URL tem prioridade sobre localStorage. Quando `?email=` vem na URL, **apaga o token salvo** pra evitar conflito.
+- Função `tryEmailLogin()`: input do email → fetch `?email=` → render aulas ou erro.
+- Função `doValidate()`: tenta validar credencial salva. Se falha (rede/rate-limit), mostra tela **"Clique aqui para validar seu acesso"** (não mais fallback silencioso pra MOCK).
+- Função `clearEmail()`: botão "Trocar e-mail" pra resetar localStorage e voltar pra tela de login.
+
+### Email enviado pela pesquisa
+- O botão "Acessar o curso" agora aponta pra `parto.manualdorecemnascido.com.br/?email=USUARIO@...`
+- Quem clica do email loga direto
+
+### Bug corrigido
+- URL `?email=...` quando localStorage tinha token antigo: o código priorizava o token e dava "Link inválido". **Fix:** `getAuthParams()` agora limpa o token salvo quando URL traz email fresco.
+
+---
+
+## ⚡ Otimização: batchGet no validar (Mai/2026)
+
+**Problema:** validar fazia 3 chamadas separadas à Sheets API (Acessos, Respostas, Aulas), gastando 3 reads/chamada. Com vários workflows + dashboards lendo a mesma cota, hits frequentes em rate limit.
+
+**Solução:** substituir os 3 nodes `googleSheets` por **1 chamada HTTP `batchGet`**.
+
+### Implementação
+- Node `BATCH GET SHEETS` (httpRequest) → URL: `https://sheets.googleapis.com/v4/spreadsheets/{SID}/values:batchGet?ranges=Acessos&ranges=Respostas&ranges=Aulas`
+- Auth: `predefinedCredentialType: googleSheetsOAuth2Api` (reutiliza a credencial OAuth Sheets)
+- Node `PARSE BATCH` (Code) — converte `valueRanges[]` em arrays de objetos com headers como keys (mesma estrutura que `googleSheets` produz, mais `row_number`)
+- `VALIDAR_JS` lê de `$('PARSE BATCH').first().json.{acessos,respostas,aulas}` em vez de `$('READ X').all()`
+
+### Ganhos
+- **3 reads → 1 read** (-66% de quota por validate)
+- Retry `5 × 12s = ~60s` no batchGet (cruza janela de cota por minuto)
+
+### Gotcha n8n: parâmetros de query com mesmo nome
+- `n8n` httpRequest com `queryParameters: [{name:"ranges",value:"X"}, {name:"ranges",value:"Y"}]` **só envia o primeiro**
+- **Fix:** colocar `?ranges=A&ranges=B&ranges=C` direto na URL como string literal
+
+---
+
+## 🚀 Dashboard async: stats + insights em 2 endpoints (Mai/2026)
+
+**Problema:** dashboard demorava 5-9s pra renderizar porque a chamada Claude (Insights de IA) bloqueava a resposta. Frontend ficava em loading muito tempo.
+
+**Solução:** **dividir em 2 endpoints** que rodam em paralelo no frontend.
+
+### Endpoints
+| Endpoint | Workflow | Tempo | Conteúdo |
+|---|---|---|---|
+| `GET /webhook/pesquisa-dashboard?kind=...` | `p3DWEIv3IO44f5vo` | ~1.5s | stats, demografia, temas, abertas (sem Claude) |
+| `GET /webhook/pesquisa-dashboard-insights?kind=...` | `T37afV3YtG3zIl6k` | ~3-4s (até ~25s com retries) | só insights da IA |
+
+Ambos suportam `?token=ADMIN_TOKEN` (admin) ou `?public=1` (público).
+
+### Frontend
+- `loadData()` chama o endpoint rápido → renderiza KPIs, gráficos, abertas imediatamente
+- Depois dispara `loadInsights()` em background → enquanto carrega, mostra placeholder **"💡 Gerando insights com IA…"** no card
+- Quando insights chegam, substituem o placeholder
+
+### Build scripts
+- `build_dashboard.py` — main endpoint (stats only)
+- `build_dashboard_insights.py` — endpoint só de insights (Claude Haiku)
+
+### Retry no Claude
+Anthropic API às vezes retorna `Overloaded` (503). Configurado `retryOnFail: True, maxTries: 4, waitBetweenTries: 5000, continueOnFail: True` no node `CLAUDE INSIGHTS`. Frontend já tem fallback "Não foi possível carregar os insights" se mesmo assim falhar.
+
+### Resultado
+- **Antes:** 5-9s até qualquer coisa aparecer
+- **Depois:** ~1.5s pra ver o dashboard funcional + insights chegam quando ficam prontos
+
+---
+
 ## 📌 Outras notas
 
 - `localStorage` keys usadas: `pesquisa_draft` (form rascunho), `curso_token` (área de aulas), `dashboard_admin_token` (dashboard admin)
