@@ -198,6 +198,67 @@
   }
   .info-banner .icon { font-size: 16px; flex-shrink: 0; }
   .info-banner strong { color: #64B5F6; }
+
+  /* ===== Para as Palestrantes ===== */
+  .pal-hero {
+    background: linear-gradient(135deg, #2a1a25 0%, #1f1419 100%);
+    border: 1px solid rgba(233, 30, 99, .25);
+    border-radius: 18px;
+    padding: 26px 28px;
+    margin-bottom: 22px;
+  }
+  .pal-hero .eyebrow { font-size: 11px; color: #E91E63; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 8px; }
+  .pal-hero h2 { color: #fff; font-size: 24px; font-weight: 700; margin-bottom: 8px; line-height: 1.25; }
+  .pal-hero p { color: #C0A8B2; font-size: 14px; max-width: 780px; line-height: 1.65; }
+  .pal-hero .meta-line { margin-top: 16px; display: flex; gap: 22px; flex-wrap: wrap; font-size: 12px; color: #888; }
+  .pal-hero .meta-line .num { color: #F8BBD0; font-weight: 700; font-size: 15px; }
+  .pal-print-btn {
+    margin-left: auto; align-self: flex-start;
+    background: rgba(233,30,99,.15); color: #F8BBD0; border: 1px solid rgba(233,30,99,.35);
+    padding: 9px 16px; border-radius: 9px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .pal-print-btn:hover { background: rgba(233,30,99,.28); color: #fff; }
+  .theme-block {
+    border-radius: 16px; padding: 22px 24px; margin-bottom: 18px;
+    background: #16161b; border: 1px solid #2a1a25;
+    border-left: 4px solid var(--accent);
+  }
+  .theme-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .theme-icon { width: 46px; height: 46px; flex-shrink: 0; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 23px; background: var(--accent-soft); }
+  .theme-head h3 { color: #fff; font-size: 19px; font-weight: 700; line-height: 1.2; }
+  .theme-head .tag { font-size: 11px; color: #8a8a8a; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+  .theme-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 24px; }
+  @media (max-width: 760px) { .theme-grid { grid-template-columns: 1fr; gap: 18px; } }
+  .sub-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--accent); font-weight: 700; margin-bottom: 11px; }
+  .sub-title.sec { margin-top: 16px; }
+  .topic-list { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .topic-list li { font-size: 13.5px; color: #E0E0E0; line-height: 1.45; padding-left: 19px; position: relative; }
+  .topic-list li::before { content: '▸'; position: absolute; left: 0; color: var(--accent); font-size: 12px; top: 1px; }
+  .topic-list li b { color: #fff; font-weight: 600; }
+  .quote { background: #0F0F12; border-radius: 11px; padding: 13px 15px; margin-bottom: 11px; border: 1px solid #232128; }
+  .quote:last-child { margin-bottom: 0; }
+  .quote p { font-size: 13px; color: #DCC9D1; font-style: italic; line-height: 1.55; }
+  .quote .who { display: block; margin-top: 7px; font-size: 11px; color: #777; font-style: normal; letter-spacing: .3px; }
+  .pal-foot {
+    background: linear-gradient(135deg, #1a1f2a 0%, #14191f 100%);
+    border: 1px solid rgba(100, 181, 246, .22); border-left: 3px solid #64B5F6;
+    border-radius: 14px; padding: 20px 22px; margin-top: 4px;
+  }
+  .pal-foot h4 { color: #64B5F6; font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; font-weight: 700; }
+  .pal-foot ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .pal-foot li { font-size: 13.5px; color: #B0BEC5; line-height: 1.5; padding-left: 17px; position: relative; }
+  .pal-foot li::before { content: '•'; position: absolute; left: 0; color: #64B5F6; }
+  .pal-foot li b { color: #CFD8DC; font-weight: 600; }
+
+  @media print {
+    @page { margin: 14mm; }
+    body { background: #fff !important; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .topbar, .tabs, .kind-selector, .splash, .pal-print-btn, .info-banner { display: none !important; }
+    .container { padding: 0; max-width: 100%; }
+    .view { display: none !important; }
+    #view-palestrantes { display: block !important; }
+    .theme-block, .pal-hero, .pal-foot { break-inside: avoid; page-break-inside: avoid; }
+  }
 </style>
 </head>
 <body>
@@ -230,6 +291,7 @@
     <button class="tab" data-view="temas" onclick="showView('temas')">Temas de Interesse</button>
     <button class="tab" data-view="evento" onclick="showView('evento')">Logística do Evento</button>
     <button class="tab" data-view="abertas" onclick="showView('abertas')">Respostas Abertas</button>
+    <button class="tab" data-view="palestrantes" onclick="showView('palestrantes')">💡 Para as Palestrantes</button>
   </div>
 
   <!-- VISÃO GERAL -->
@@ -376,6 +438,171 @@
       </table>
     </div>
   </div>
+
+  <!-- PARA AS PALESTRANTES -->
+  <div class="view" id="view-palestrantes">
+    <div class="pal-hero">
+      <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <div class="eyebrow">Material para as palestrantes</div>
+          <h2>O que as mães mais querem aprender</h2>
+          <p>Síntese das respostas abertas da pesquisa, organizada pelos quatro grandes temas do evento. Em cada bloco: os assuntos mais pedidos e algumas falas reais das participantes, para guiar a preparação das palestras.</p>
+        </div>
+        <button class="pal-print-btn" onclick="window.print()">🖨️ Salvar como PDF</button>
+      </div>
+      <div class="meta-line">
+        <span><span class="num">148</span> respondentes</span>
+        <span><span class="num">31,8</span> anos em média</span>
+        <span>Maioria <span class="num">gestante</span> — muitas de primeira viagem</span>
+      </div>
+    </div>
+
+    <!-- 1. GESTAÇÃO -->
+    <div class="theme-block" style="--accent:#E91E63;--accent-soft:rgba(233,30,99,.15)">
+      <div class="theme-head">
+        <div class="theme-icon">🤰</div>
+        <div>
+          <h3>Gestação</h3>
+          <div class="tag">Da concepção ao fim da gravidez</div>
+        </div>
+      </div>
+      <div class="theme-grid">
+        <div>
+          <div class="sub-title">Dúvidas mais pedidas</div>
+          <ul class="topic-list">
+            <li><b>Saúde da mãe na gestação</b> — dores e mudanças do corpo em <b>todas as fases</b> (não só o 1º trimestre), doenças gestacionais</li>
+            <li><b>Exames e vacinas</b> da gravidez</li>
+            <li><b>"Pode e não pode"</b> — alimentação, cosméticos e produtos</li>
+            <li><b>Exercícios</b> e preparação física para o parto</li>
+            <li><b>Saúde mental e emocional</b> durante a gravidez</li>
+            <li>O <b>1º trimestre</b> — fase apontada como a de mais dúvidas</li>
+            <li>Relação do casal e <b>papel do parceiro</b> na gestação</li>
+          </ul>
+        </div>
+        <div>
+          <div class="sub-title">Falas marcantes</div>
+          <div class="quote"><p>"Romantizam muito a gestação e não é um momento fácil… tenho dores constantes e não se fala sobre isso. Sobre os medos e dores físicas das gestantes em todas as fases — ficam apenas no 1º tri e parto."</p><span class="who">— 38 anos, grávida</span></div>
+          <div class="quote"><p>"Informações que norteiem a gestante e o casal a se organizarem com o que é realmente importante: exames, vacinas, pode e não pode, exercícios, sinais de alerta, plano de parto…"</p><span class="who">— 40 anos, grávida</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. DIA DO PARTO -->
+    <div class="theme-block" style="--accent:#BA68C8;--accent-soft:rgba(186,104,200,.15)">
+      <div class="theme-head">
+        <div class="theme-icon">👶</div>
+        <div>
+          <h3>Dia do parto</h3>
+          <div class="tag">Tema de muito medo entre as de primeira viagem</div>
+        </div>
+      </div>
+      <div class="theme-grid">
+        <div>
+          <div class="sub-title">Dúvidas mais pedidas</div>
+          <ul class="topic-list">
+            <li><b>Tipos de parto</b> — normal × cesárea: indicações, riscos, benefícios e recuperação</li>
+            <li><b>Como identificar o trabalho de parto</b> — reconhecer contrações, respiração, fases e <b>quando ficar em casa × ir para o hospital</b></li>
+            <li><b>Indução</b> do parto normal quando não vem espontaneamente</li>
+            <li>Preparação do <b>corpo e da mente</b> para o parto</li>
+            <li><b>Violência obstétrica</b> — como identificar, direitos da parturiente, plano de parto</li>
+            <li><b>Papel do parceiro</b> no parto</li>
+            <li>Mala da maternidade</li>
+          </ul>
+        </div>
+        <div>
+          <div class="sub-title">Falas marcantes</div>
+          <div class="quote"><p>"Meu maior medo tem sido a hora do parto! Como quero parto normal, tenho muito medo de sofrer violência e me mandarem para a cesariana sem necessidade."</p><span class="who">— 22 anos, grávida</span></div>
+          <div class="quote"><p>"Como agir quando a dor começar? Ficar em casa, ir pro hospital?"</p><span class="who">— 36 anos, grávida</span></div>
+          <div class="quote"><p>"Como conseguir que nossas escolhas sejam aceitas pela equipe do SUS, plano de parto, informar as pessoas dos seus direitos."</p><span class="who">— 30 anos, grávida</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. AMAMENTAÇÃO, SONO E CUIDADOS -->
+    <div class="theme-block" style="--accent:#4DB6AC;--accent-soft:rgba(77,182,172,.15)">
+      <div class="theme-head">
+        <div class="theme-icon">🍼</div>
+        <div>
+          <h3>Amamentação, sono e cuidados</h3>
+          <div class="tag">O tema mais citado de toda a pesquisa</div>
+        </div>
+      </div>
+      <div class="theme-grid">
+        <div>
+          <div class="sub-title">Amamentação <span style="color:#777;font-weight:400;text-transform:none;letter-spacing:0">(assunto nº 1)</span></div>
+          <ul class="topic-list">
+            <li><b>Pega correta</b> e técnicas na prática — demonstração ao vivo</li>
+            <li><b>Amamentar sem dor</b> — muitas relatam dor que levou ao desmame precoce</li>
+            <li>Apojadura e <b>regulação</b> da amamentação</li>
+            <li>Amamentar <b>sem rede de apoio</b></li>
+            <li>Quando introduzir mamadeira, dar ou não chupeta, utensílios e apoio do parceiro</li>
+          </ul>
+          <div class="sub-title sec">Sono</div>
+          <ul class="topic-list">
+            <li><b>Rotina e previsibilidade</b> do sono do recém-nascido</li>
+            <li>Fazer o bebê <b>dormir no berço</b>, posições seguras, emendar ciclos</li>
+            <li>Sinais físicos e emocionais do sono</li>
+          </ul>
+          <div class="sub-title sec">Cuidados do dia a dia <span style="color:#777;font-weight:400;text-transform:none;letter-spacing:0">(forte pedido por aulas práticas)</span></div>
+          <ul class="topic-list">
+            <li><b>Banho, troca de fralda, umbigo</b> e assaduras</li>
+            <li><b>Tipos de choro</b> e como interpretar, cólicas</li>
+            <li><b>Primeiros socorros e manobra de desengasgo</b> — muito citado</li>
+            <li><b>Segurança do bebê</b> (berço, viroses, sinais de alerta)</li>
+            <li>Rotina, desenvolvimento, introdução alimentar; casos como APLV / pele sensível</li>
+          </ul>
+        </div>
+        <div>
+          <div class="sub-title">Falas marcantes</div>
+          <div class="quote"><p>"Vivências reais, nada de maternidade perfeita: pega errada, posições para amamentar, quando introduzir mamadeira, dar ou não chupeta, como fazer o bebê dormir no berço…"</p><span class="who">— 35 anos</span></div>
+          <div class="quote"><p>"Quem tem parto pelo SUS infelizmente nem sempre te ensinam a pega do bebê."</p><span class="who">— 30 anos, grávida</span></div>
+          <div class="quote"><p>"Não sei nem onde passar a pomada para prevenir assadura… coisas básicas que ninguém fala, mas quem não tem experiência nenhuma nem rede de apoio não sabe."</p><span class="who">— 25 anos, grávida</span></div>
+          <div class="quote"><p>"No meu primeiro tive muita dificuldade e não amamentei mais desde os 20 dias de vida dele."</p><span class="who">— 39 anos, grávida</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PÓS-PARTO -->
+    <div class="theme-block" style="--accent:#FFB74D;--accent-soft:rgba(255,183,77,.15)">
+      <div class="theme-head">
+        <div class="theme-icon">🌱</div>
+        <div>
+          <h3>Pós-parto</h3>
+          <div class="tag">Pedido recorrente de olhar para a mãe</div>
+        </div>
+      </div>
+      <div class="theme-grid">
+        <div>
+          <div class="sub-title">Dúvidas mais pedidas</div>
+          <ul class="topic-list">
+            <li><b>Puerpério</b> — o que esperar e como passar pelas dificuldades de forma mais leve</li>
+            <li><b>Saúde mental e emocional da mãe</b> — depressão pós-parto, ansiedade (pedido sentido e recorrente)</li>
+            <li><b>Atenção à mãe</b> depois que o bebê nasce ("a gente esquece da gente")</li>
+            <li><b>Recuperação pós-parto</b>, inclusive cesárea</li>
+            <li>Mudança na vida do casal e da mãe</li>
+            <li><b>Conexão mãe e bebê</b> e as primeiras horas de vida</li>
+          </ul>
+        </div>
+        <div>
+          <div class="sub-title">Falas marcantes</div>
+          <div class="quote"><p>"Sinto falta de uma atenção à mãe depois que o bebê nasce. A gente fica tão preocupada em não saber cuidar do bebê que esquece da gente."</p><span class="who">— 38 anos</span></div>
+          <div class="quote"><p>"Sono e bem-estar no puerpério — na primeira maternidade eu só dormi bem quando ele tinha 2 anos."</p><span class="who">— 38 anos, grávida</span></div>
+          <div class="quote"><p>"Saúde mental pós-parto e conexão com mãe e bebê."</p><span class="who">— 31 anos, grávida</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BÔNUS: FORMATO -->
+    <div class="pal-foot">
+      <h4>💡 Bônus — sobre o formato (não é tema, mas vale saber)</h4>
+      <ul>
+        <li>Forte pedido por <b>aulas práticas e demonstrações ao vivo</b> (banho, pega, troca) — "é o diferencial do presencial; teoria dá pra ver online".</li>
+        <li>Querem informação <b>direta, organizada e baseada em evidência</b>, sem contradições que geram insegurança.</li>
+        <li>Muitas citam <b>medo, insegurança e falta de rede de apoio</b> como ponto de partida — uma abordagem acolhedora importa.</li>
+        <li>Pedido para <b>incluir o casal/parceiro</b> e horário que não atrapalhe o trabalho (fim de semana ou à noite).</li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -406,6 +633,9 @@
   function showView(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === name));
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+    // O bloco "Para as Palestrantes" é uma síntese editorial — não depende do filtro Geral/Parto/Enxoval.
+    const ks = document.querySelector('.kind-selector');
+    if (ks) ks.style.display = (name === 'palestrantes') ? 'none' : '';
   }
 
   function showError(msg) {
