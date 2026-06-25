@@ -265,6 +265,31 @@
   .pal-resp-item .head b { color: #C0C0C0; font-weight: 600; }
   .pal-resp-item p { font-size: 13px; color: #E0E0E0; line-height: 1.5; white-space: pre-wrap; }
 
+  /* ===== Navegação mobile ===== */
+  @media (max-width: 640px) {
+    .container { padding: 16px 12px 60px; }
+    /* Seletor de clube: 3 colunas ocupando a largura */
+    .kind-selector { width: 100% !important; flex-wrap: nowrap !important; gap: 6px !important; }
+    .kind-btn { flex: 1 1 0 !important; min-width: 0 !important; padding: 10px 8px !important; font-size: 12px !important; white-space: nowrap; }
+    /* Abas: uma linha só com rolagem horizontal suave (sem barra visível) */
+    .tabs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      gap: 0;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex: 0 0 auto; white-space: nowrap; padding: 11px 13px; font-size: 13px; }
+    /* Hero "Para as Palestrantes" */
+    .pal-hero { padding: 20px 18px; }
+    .pal-hero h2 { font-size: 20px; }
+    .pal-print-btn { margin-left: 0; margin-top: 12px; }
+    .theme-block { padding: 18px 16px; }
+    .theme-head h3 { font-size: 17px; }
+  }
+
   @media print {
     @page { margin: 14mm; }
     body { background: #fff !important; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
