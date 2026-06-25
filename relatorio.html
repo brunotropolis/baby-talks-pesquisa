@@ -249,6 +249,21 @@
   .pal-foot li { font-size: 13.5px; color: #B0BEC5; line-height: 1.5; padding-left: 17px; position: relative; }
   .pal-foot li::before { content: '•'; position: absolute; left: 0; color: #64B5F6; }
   .pal-foot li b { color: #CFD8DC; font-weight: 600; }
+  /* Respostas completas por palestrante (consulta) */
+  .pal-resp { margin-top: 18px; border-top: 1px dashed #2a2a30; padding-top: 16px; }
+  .pal-resp-toggle {
+    background: var(--accent-soft); color: #fff; border: 1px solid var(--accent);
+    padding: 9px 15px; border-radius: 9px; font-family: inherit; font-size: 12.5px; font-weight: 600;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .pal-resp-toggle:hover { filter: brightness(1.15); }
+  .pal-resp-toggle .arrow { transition: transform .2s; font-size: 10px; }
+  .pal-resp-toggle.open .arrow { transform: rotate(180deg); }
+  .pal-resp-list { margin-top: 14px; max-height: 460px; overflow-y: auto; padding-right: 6px; }
+  .pal-resp-item { background: #0F0F12; border: 1px solid #232128; border-radius: 10px; padding: 11px 14px; margin-bottom: 9px; }
+  .pal-resp-item .head { font-size: 11px; color: #888; margin-bottom: 5px; }
+  .pal-resp-item .head b { color: #C0C0C0; font-weight: 600; }
+  .pal-resp-item p { font-size: 13px; color: #E0E0E0; line-height: 1.5; white-space: pre-wrap; }
 
   @media print {
     @page { margin: 14mm; }
@@ -258,6 +273,7 @@
     .view { display: none !important; }
     #view-palestrantes { display: block !important; }
     .theme-block, .pal-hero, .pal-foot { break-inside: avoid; page-break-inside: avoid; }
+    .pal-resp-list { max-height: none !important; overflow: visible !important; }
   }
 </style>
 </head>
@@ -305,7 +321,7 @@
     <div class="kpi-row" id="kpis"></div>
 
     <!-- Insights Claude -->
-    <div class="grid-2" id="insights"></div>
+    <div id="insights" style="margin-bottom:24px"></div>
 
     <!-- Interesse em blocos temáticos -->
     <div class="card" style="margin-bottom:16px">
@@ -431,7 +447,6 @@
             <th class="col-data">Data</th>
             <th class="col-quem">Perfil</th>
             <th>O que gostaria de aprender</th>
-            <th class="col-investir">Investir</th>
           </tr>
         </thead>
         <tbody id="abertasTbody"></tbody>
@@ -485,6 +500,10 @@
           <div class="quote"><p>"Informações que norteiem a gestante e o casal a se organizarem com o que é realmente importante: exames, vacinas, pode e não pode, exercícios, sinais de alerta, plano de parto…"</p><span class="who">— 40 anos, grávida</span></div>
         </div>
       </div>
+      <div class="pal-resp">
+        <button class="pal-resp-toggle" onclick="togglePalResp(this)"><span>📋 Ver respostas das mães sobre Gestação (<span data-count>0</span>)</span><span class="arrow">▾</span></button>
+        <div class="pal-resp-list" data-theme="gestacao" style="display:none"></div>
+      </div>
     </div>
 
     <!-- 2. DIA DO PARTO -->
@@ -515,6 +534,10 @@
           <div class="quote"><p>"Como agir quando a dor começar? Ficar em casa, ir pro hospital?"</p><span class="who">— 36 anos, grávida</span></div>
           <div class="quote"><p>"Como conseguir que nossas escolhas sejam aceitas pela equipe do SUS, plano de parto, informar as pessoas dos seus direitos."</p><span class="who">— 30 anos, grávida</span></div>
         </div>
+      </div>
+      <div class="pal-resp">
+        <button class="pal-resp-toggle" onclick="togglePalResp(this)"><span>📋 Ver respostas das mães sobre o Dia do parto (<span data-count>0</span>)</span><span class="arrow">▾</span></button>
+        <div class="pal-resp-list" data-theme="parto" style="display:none"></div>
       </div>
     </div>
 
@@ -560,6 +583,10 @@
           <div class="quote"><p>"No meu primeiro tive muita dificuldade e não amamentei mais desde os 20 dias de vida dele."</p><span class="who">— 39 anos, grávida</span></div>
         </div>
       </div>
+      <div class="pal-resp">
+        <button class="pal-resp-toggle" onclick="togglePalResp(this)"><span>📋 Ver respostas das mães sobre Amamentação, sono e cuidados (<span data-count>0</span>)</span><span class="arrow">▾</span></button>
+        <div class="pal-resp-list" data-theme="amamentacao" style="display:none"></div>
+      </div>
     </div>
 
     <!-- 4. PÓS-PARTO -->
@@ -589,6 +616,10 @@
           <div class="quote"><p>"Sono e bem-estar no puerpério — na primeira maternidade eu só dormi bem quando ele tinha 2 anos."</p><span class="who">— 38 anos, grávida</span></div>
           <div class="quote"><p>"Saúde mental pós-parto e conexão com mãe e bebê."</p><span class="who">— 31 anos, grávida</span></div>
         </div>
+      </div>
+      <div class="pal-resp">
+        <button class="pal-resp-toggle" onclick="togglePalResp(this)"><span>📋 Ver respostas das mães sobre Pós-parto (<span data-count>0</span>)</span><span class="arrow">▾</span></button>
+        <div class="pal-resp-list" data-theme="posparto" style="display:none"></div>
       </div>
     </div>
 
@@ -676,7 +707,6 @@
       <div class="kpi"><div class="kpi-label">Idade média</div><div class="kpi-value">${stats.idade.media}</div><div class="kpi-sub">${stats.idade.min}–${stats.idade.max} anos</div></div>
       <div class="kpi"><div class="kpi-label">Trabalham</div><div class="kpi-value">${pct(stats.trabalho, 'Sim')}%</div><div class="kpi-sub">das respondentes</div></div>
       <div class="kpi"><div class="kpi-label">Cônjuge no evento</div><div class="kpi-value">${pct(stats.conjuge_evento, 'Sim')}%</div><div class="kpi-sub">querem que participe</div></div>
-      <div class="kpi"><div class="kpi-label">Querem gratuito</div><div class="kpi-value">${stats.recusa_pagar?.pct_recusa || 0}%</div><div class="kpi-sub">${stats.recusa_pagar?.total || 0} pessoas (fora do ticket)</div></div>
     `;
   }
 
@@ -714,8 +744,6 @@
       return;
     }
     const ap = insights.aprender_evento || {};
-    const inv = insights.investir || {};
-    const recusaTotal = stats?.recusa_pagar?.total || 0;
     c.innerHTML = `
       <div class="insight-card">
         <h3>🎓 P11 — O que querem aprender</h3>
@@ -731,20 +759,6 @@
             <div class="pill-list">${ap.dores_recorrentes.map(t => `<span class="pill">${t}</span>`).join('')}</div>
           </div>` : ''}
         ${ap.insight_acionavel ? `<div class="acionavel"><strong>💡 Sugestão:</strong> ${ap.insight_acionavel}</div>` : ''}
-      </div>
-      <div class="insight-card">
-        <h3>💰 P15 — Quanto investiriam</h3>
-        ${recusaTotal > 0 ? `<div style="font-size:11px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Cálculo ignora ${recusaTotal} resposta${recusaTotal > 1 ? 's' : ''} "gratuito/R$ 0"</div>` : ''}
-        <div class="insight-resumo">${inv.resumo || '—'}</div>
-        ${inv.faixa_predominante ? `
-          <div class="faixa">
-            <div>Faixa predominante: <strong>${inv.faixa_predominante}</strong></div>
-          </div>
-          <div class="faixa">
-            <div>Mínimo citado: <strong>${inv.valor_minimo_citado || '—'}</strong></div>
-            <div>Máximo citado: <strong>${inv.valor_maximo_citado || '—'}</strong></div>
-          </div>` : ''}
-        ${inv.insight_acionavel ? `<div class="acionavel"><strong>💡 Sugestão:</strong> ${inv.insight_acionavel}</div>` : ''}
       </div>
     `;
   }
@@ -843,7 +857,7 @@
     });
     const tbody = document.getElementById('abertasTbody');
     if (!items.length) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#666;padding:40px">Nenhuma resposta encontrada.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#666;padding:40px">Nenhuma resposta encontrada.</td></tr>';
       const pag = document.getElementById('abertas-paginacao');
       if (pag) pag.innerHTML = '';
       return;
@@ -860,7 +874,6 @@
           <div style="color:#666;font-size:11px;margin-top:3px">${escapeHtml(a.fase || '—')}</div>
         </td>
         <td class="aprender">${escapeHtml(a.aprender_evento || '—')}</td>
-        <td class="investir col-investir">${escapeHtml(a.investir || '—')}${a.recusa_pagar ? '<div style="margin-top:6px"><span style="color:#FFB74D;font-size:10px;background:rgba(255,183,77,.12);padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600">fora do ticket</span></div>' : ''}</td>
       </tr>
     `).join('');
     let pag = document.getElementById('abertas-paginacao');
@@ -874,6 +887,55 @@
     pag.innerHTML = `<div style="width:100%;text-align:center;color:#888;font-size:12px;margin-bottom:8px">
       Mostrando ${inicio + 1}-${Math.min(inicio + PAGE_SIZE, items.length)} de ${items.length} respostas
     </div>` + renderPaginacao(abertasPagina, totalPaginas, n => { abertasPagina = n; renderAbertas(); });
+  }
+
+  // ===== Respostas por palestrante (tema) — para consulta =====
+  function normalize(s) {
+    return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+  const TEMA_KEYWORDS = {
+    gestacao: ['gestac','gravidez','gravid','exame','vacina','trimestre','pre-natal','pre natal','prenatal','doenca gestac','doencas gestac','cosmetic','pode e nao pode','concepcao','dores na gest'],
+    parto: ['parto','cesar','contrac','trabalho de parto','inducao','induc','violencia obst','plano de parto','mala maternidade','via de parto','dilatac','hora do parto'],
+    amamentacao: ['amament','mamar','mamad','pega','peito','seio','leite','chupeta','apojadura','sono','dormir','berco','choro','colica','banho','fralda','umbigo','assadura','desengasg','engasg','primeiros socorros','socorro','cuidado','rotina','introducao alimentar','aplv','seguranca do bebe','seguranca do rn','desenvolvimento','recem nascido','recem-nascido','primeiros dias','primeiros meses'],
+    posparto: ['puerper','pos-parto','pos parto','posparto','saude mental','depress','emocional da mae','recuperac','primeiras horas','conexao','atencao a mae','bem estar no puerp','saude emocional']
+  };
+  function classifyTemas(texto) {
+    let n = normalize(texto);
+    // evita que "pós-parto" caia no tema "parto"
+    const nParto = n.replace(/pos[\s-]?parto/g, 'XX').replace(/puerper\w*/g, 'XX');
+    const temas = new Set();
+    for (const k of TEMA_KEYWORDS.gestacao) if (n.includes(k)) { temas.add('gestacao'); break; }
+    for (const k of TEMA_KEYWORDS.parto) if (nParto.includes(k)) { temas.add('parto'); break; }
+    for (const k of TEMA_KEYWORDS.amamentacao) if (n.includes(k)) { temas.add('amamentacao'); break; }
+    for (const k of TEMA_KEYWORDS.posparto) if (n.includes(k)) { temas.add('posparto'); break; }
+    return temas;
+  }
+  function fillPalResponses() {
+    const buckets = { gestacao: [], parto: [], amamentacao: [], posparto: [] };
+    (DATA?.abertas || []).forEach(a => {
+      const txt = a.aprender_evento || '';
+      if (!txt.trim()) return;
+      const temas = classifyTemas(txt);
+      temas.forEach(t => buckets[t] && buckets[t].push(a));
+    });
+    document.querySelectorAll('.pal-resp-list').forEach(list => {
+      const tema = list.dataset.theme;
+      const items = buckets[tema] || [];
+      const btn = list.parentElement.querySelector('.pal-resp-toggle [data-count]');
+      if (btn) btn.textContent = items.length;
+      list.innerHTML = items.length ? items.map(a => `
+        <div class="pal-resp-item">
+          <div class="head"><b>${a.idade || '—'} anos</b> · ${escapeHtml(a.fase || '—')}${a.criado_em ? ' · ' + (a.criado_em || '').substring(0,10) : ''}</div>
+          <p>${escapeHtml(a.aprender_evento || '—')}</p>
+        </div>`).join('')
+        : '<div style="color:#666;font-size:13px;padding:8px 0">Sem respostas classificadas neste tema.</div>';
+    });
+  }
+  function togglePalResp(btn) {
+    const list = btn.parentElement.querySelector('.pal-resp-list');
+    const open = list.style.display === 'none';
+    list.style.display = open ? 'block' : 'none';
+    btn.classList.toggle('open', open);
   }
 
   function escapeHtml(s) {
@@ -897,6 +959,7 @@
       }
       renderGeral(data);
       renderAbertas();
+      fillPalResponses();
       document.getElementById('splash').classList.add('hide');
       loadInsights();
     } catch(err) {
